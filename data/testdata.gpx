@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.topografix.com/GPX/1/1" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="gpx.py -- https://github.com/tkrajina/gpxpy">
+<metadata>
+<author>
+<link ></link></author>
+<copyright ></copyright>
+<link ></link></metadata>
+<trk>
+<link ></link>
+<trkseg>
+<trkpt lat="47.828333333" lon="13.055976667">
+<ele>474.5</ele>
+<time>2017-11-20T16:49:29Z</time>
+<link ></link>
+<extensions>
+<data1>-14a</data1>
+<tag key="data2" value="233731" /></extensions></trkpt>
+<trkpt lat="47.828403333" lon="13.056066667">
+<ele>475.2</ele>
+<time>2017-11-20T16:49:30Z</time>
+<link ></link>
+<extensions>
+<data1>-14c</data1>
+<tag key="data2" value="233731" /></extensions></trkpt>
+<trkpt lat="47.828468333" lon="13.056165">
+<ele>475.6</ele>
+<time>2017-11-20T16:49:31Z</time>
+<link ></link>
+<extensions>
+<data1>-13a</data1>
+<tag key="data2" value="None" /></extensions></trkpt>
+<trkpt lat="47.828545" lon="13.056265">
+<ele>476.2</ele>
+<time>2017-11-20T16:49:32Z</time>
+<link ></link>
+<extensions>
+<data1>-14b</data1>
+<tag key="data2" value="233731" /></extensions></trkpt>
+<trkpt lat="47.828645" lon="13.056461667">
+<ele>474.7</ele>
+<time>2017-11-20T16:49:34Z</time>
+<link ></link>
+<extensions>
+<data1>-16b</data1>
+<tag key="data2" value="233731" /></extensions></trkpt>
+<trkpt lat="47.828726667" lon="13.05653">
+<ele>474.7</ele>
+<time>2017-11-20T16:49:35Z</time>
+<link ></link>
+<extensions>
+<data1>-14a</data1>
+<tag key="data2" value="233731" /></extensions></trkpt>
+</trkseg></trk></gpx>
