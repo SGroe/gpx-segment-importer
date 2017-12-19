@@ -119,9 +119,10 @@ class GpxFileReader:
 
                 if attribute.datatype is DataTypes.Integer and self.str_is_int(attribute.example_value) or \
                         attribute.datatype is DataTypes.Double and self.str_is_double(attribute.example_value) or \
-                        attribute.datatype is DataTypes.Boolean and self.str_is_boolean(attribute.example_value) or \
                         attribute.datatype is DataTypes.String:
                     attributes[attribute.attribute_key_modified] = attribute.example_value
+                elif attribute.datatype is DataTypes.Boolean and self.str_is_boolean(attribute.example_value):
+                    attributes[attribute.attribute_key_modified] = str(attribute.example_value)
             except KeyError:
                 pass
                 # print('KeyError while reading attribute ' + self.normalize(extension.tag))
@@ -175,8 +176,7 @@ class GpxFileReader:
     def str_is_boolean(string):
         if string is None:
             return False
-        if string in ['true', 'false', 'TRUE', 'FALSE']:
-            # other values like 1 or t should be recognized as int or string
+        if string in ['true', 'false', 'TRUE', 'FALSE', 1, 0, 't', 'f']:
             return True
         return False
 
