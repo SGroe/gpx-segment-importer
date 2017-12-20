@@ -10,7 +10,7 @@ import os
 class GpxFeatureBuilder:
     """ Builds gpx layers and features """
 
-    def __init__(self, layer_name, use_wgs84, attribute_definitions):
+    def __init__(self, layer_name, attribute_definitions, attribute_select='Last', use_wgs84=True):
         self.error_message = ''
 
         layer_definition = 'LineString?crs=epsg:4326' if use_wgs84 else 'LineString'
@@ -22,17 +22,26 @@ class GpxFeatureBuilder:
         attributes = []
         for attribute in attribute_definitions:
             if attribute.selected:  # select attribute [boolean]
-                if attribute.datatype == DataTypes.Integer:  # data type [Integer|Double|String]
-                    attributes.append(QgsField(str(attribute.attribute_key_modified), QVariant.Int, 'Integer'))
-                elif attribute.datatype == DataTypes.Double:
-                    attributes.append(QgsField(str(attribute.attribute_key_modified), QVariant.Double, 'Real'))
-                elif attribute.datatype == DataTypes.Boolean:
-                    # QVariant.Bool is not available for QgsField
-                    attributes.append(QgsField(str(attribute.attribute_key_modified), QVariant.String, 'String'))
-                # elif attribute.datatype == DataTypes.Date:
-                #     attributes.append(QgsField(str(attribute.attribute_key_modified), QVariant.DateTime, 'String'))
-                elif attribute.datatype == DataTypes.String:
-                    attributes.append(QgsField(str(attribute.attribute_key_modified), QVariant.String, 'String'))
+                for attribute_select_option in ['First', 'Last']:
+                    if attribute_select_option != attribute_select and attribute_select != 'Both':
+                        continue
+                    key = str(attribute.attribute_key_modified)
+                    if attribute_select == 'Both':
+                        if attribute_select_option == 'First':
+                            key = 'a_' + key
+                        elif attribute_select_option == 'Last':
+                            key = 'b_' + key
+                    if attribute.datatype == DataTypes.Integer:  # data type [Integer|Double|String]
+                        attributes.append(QgsField(key, QVariant.Int, 'Integer'))
+                    elif attribute.datatype == DataTypes.Double:
+                        attributes.append(QgsField(key, QVariant.Double, 'Real'))
+                    elif attribute.datatype == DataTypes.Boolean:
+                        # QVariant.Bool is not available for QgsField
+                        attributes.append(QgsField(key, QVariant.String, 'String'))
+                    # elif attribute.datatype == DataTypes.Date:
+                    #     attributes.append(QgsField(key, QVariant.DateTime, 'String'))
+                    elif attribute.datatype == DataTypes.String:
+                        attributes.append(QgsField(key, QVariant.String, 'String'))
         self.data_provider.addAttributes(attributes)
         self.vector_layer.updateFields()
 

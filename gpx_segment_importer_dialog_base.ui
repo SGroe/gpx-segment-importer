@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>430</width>
-    <height>329</height>
+    <width>418</width>
+    <height>409</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0">
      <property name="spacing">
       <number>5</number>
      </property>
@@ -50,6 +50,44 @@
       <widget class="QTableView" name="tableAttributes"/>
      </item>
      <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Add attributes from which track point(s):</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QRadioButton" name="radioButtonFirst">
+         <property name="text">
+          <string>Outgoing track point</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButtonBoth">
+         <property name="text">
+          <string>Both track points</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButtonLast">
+         <property name="text">
+          <string>Incoming track point</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QLineEdit" name="txtOutputDirectory">
@@ -74,21 +112,17 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QCheckBox" name="chkUseWgs84">
-         <property name="text">
-          <string>Use 'EPSG:4326' coordinate reference system</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-         <property name="tristate">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QCheckBox" name="chkUseWgs84">
+       <property name="text">
+        <string>Use 'EPSG:4326' coordinate reference system</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <property name="tristate">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="lblFeedback">

@@ -49,7 +49,7 @@ class GpxFileReader:
 
         return True if self.error_message == '' else False
 
-    def import_gpx_file(self, file_path, output_directory, use_wgs84=True, overwrite=False):
+    def import_gpx_file(self, file_path, output_directory, attribute_select="Last", use_wgs84=True, overwrite=False):
         """ Imports the data from the GPX file and create the vector layer """
 
         self.error_message = ''
@@ -57,29 +57,38 @@ class GpxFileReader:
         tree = ElementTree.parse(file_path)
         root = tree.getroot()
 
-        vector_layer_builder = GpxFeatureBuilder(os.path.basename(file_path), use_wgs84, self.attribute_definitions)
+        vector_layer_builder = GpxFeatureBuilder(os.path.basename(file_path), self.attribute_definitions,
+                                                 attribute_select, use_wgs84)
 
-        previous_point = None
+        prev_track_point = None
 
         for track in root.findall('gpx:trk', self.namespace):
             track_segment = track.find('gpx:trkseg', self.namespace)
 
             for track_point in track_segment.findall('gpx:trkpt', self.namespace):
+                if prev_track_point is not None:
+                    previous_point = QgsPoint(float(prev_track_point.get('lon')), float(prev_track_point.get('lat')))
+                    new_point = QgsPoint(float(track_point.get('lon')), float(track_point.get('lat')))
 
-                new_point = QgsPoint(float(track_point.get('lon')), float(track_point.get('lat')))
-
-                if previous_point is not None:
                     if self.is_equal_coordinate(previous_point, new_point):
-                        # print 'Equal coordinate at ' + track_point.find('gpx:time', self.namespace).text
                         continue
 
-                    # add a feature
+                    # add a feature with first/last/both attributes
                     attributes = dict()
-                    for child in track_point:
-                        self._add_attribute(attributes, child)
+                    if attribute_select == 'First':
+                        for child in prev_track_point:
+                            self._add_attribute(attributes, child, '')
+                    elif attribute_select == 'Last':
+                        for child in track_point:
+                            self._add_attribute(attributes, child, '')
+                    elif attribute_select == 'Both':
+                        for child in prev_track_point:
+                            self._add_attribute(attributes, child, 'a_')
+                        for child in track_point:
+                            self._add_attribute(attributes, child, 'b_')
                     vector_layer_builder.add_feature([previous_point, new_point], attributes)
 
-                previous_point = new_point
+                prev_track_point = track_point
 
         vector_layer_builder.save_file(output_directory, overwrite)
         self.error_message = vector_layer_builder.error_message
@@ -103,7 +112,7 @@ class GpxFileReader:
         for child in element:
             self._detect_attribute(child)
 
-    def _add_attribute(self, attributes, element):
+    def _add_attribute(self, attributes, element, key_prefix):
         """ Reads and adds attributes to the feature """
 
         if len(element) == 0:  # only elements without children
@@ -120,14 +129,14 @@ class GpxFileReader:
                 if attribute.datatype is DataTypes.Integer and self.str_is_int(attribute.example_value) or \
                         attribute.datatype is DataTypes.Double and self.str_is_double(attribute.example_value) or \
                         attribute.datatype is DataTypes.String:
-                    attributes[attribute.attribute_key_modified] = attribute.example_value
+                    attributes[key_prefix + attribute.attribute_key_modified] = attribute.example_value
                 elif attribute.datatype is DataTypes.Boolean and self.str_is_boolean(attribute.example_value):
-                    attributes[attribute.attribute_key_modified] = str(attribute.example_value)
+                    attributes[key_prefix + attribute.attribute_key_modified] = str(attribute.example_value)
             except KeyError:
                 pass
                 # print('KeyError while reading attribute ' + self.normalize(extension.tag))
         for child in element:
-            self._add_attribute(attributes, child)
+            self._add_attribute(attributes, child, key_prefix)
 
     def _get_attribute_definition(self, key):
         for attribute in self.attribute_definitions:
