@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>418</width>
+    <width>431</width>
     <height>409</height>
    </rect>
   </property>
@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0,0">
      <property name="spacing">
       <number>5</number>
      </property>
@@ -61,7 +61,7 @@
        <item>
         <widget class="QRadioButton" name="radioButtonFirst">
          <property name="text">
-          <string>Outgoing track point</string>
+          <string>Segment start track point</string>
          </property>
         </widget>
        </item>
@@ -78,7 +78,7 @@
        <item>
         <widget class="QRadioButton" name="radioButtonLast">
          <property name="text">
-          <string>Incoming track point</string>
+          <string>Segment end track point</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -121,6 +121,13 @@
        </property>
        <property name="tristate">
         <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkCalculateSpeed">
+       <property name="text">
+        <string>Calculate distance and speed between track points</string>
        </property>
       </widget>
      </item>

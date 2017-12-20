@@ -1,6 +1,5 @@
 from PyQt4.QtCore import QVariant
 # Initialize Qt resources from file resources.py
-from xml.etree import ElementTree
 from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry, QgsFeature, QgsGeometry
 from datatype_definition import DataTypes
 from vector_file_writer import VectorFileWriter
@@ -19,18 +18,21 @@ class GpxFeatureBuilder:
 
         # Enter editing mode
         self.vector_layer.startEditing()
-        attributes = []
+        attributes = list()
         for attribute in attribute_definitions:
             if attribute.selected:  # select attribute [boolean]
                 for attribute_select_option in ['First', 'Last']:
                     if attribute_select_option != attribute_select and attribute_select != 'Both':
                         continue
+
                     key = str(attribute.attribute_key_modified)
-                    if attribute_select == 'Both':
+                    if attribute_select == 'Both' and attribute.attribute_key_modified != '_speed' \
+                            and attribute.attribute_key_modified != '_distance':
                         if attribute_select_option == 'First':
                             key = 'a_' + key
                         elif attribute_select_option == 'Last':
                             key = 'b_' + key
+
                     if attribute.datatype == DataTypes.Integer:  # data type [Integer|Double|String]
                         attributes.append(QgsField(key, QVariant.Int, 'Integer'))
                     elif attribute.datatype == DataTypes.Double:

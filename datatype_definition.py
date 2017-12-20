@@ -1,4 +1,5 @@
 from datetime import *
+import re
 
 
 class DataTypeDefinition:
@@ -37,7 +38,7 @@ class DataTypes():
         return DataTypes.Undefined
 
     @staticmethod
-    def _detect_data_type(text):
+    def detect_data_type(text):
         if DataTypes.str_is_int(text):
             return DataTypes.Integer
         elif DataTypes.str_is_double(text):
@@ -103,11 +104,18 @@ class DataTypes():
     def create_date(s):
         if s is None:
             return None
+        s = re.sub(r"[+-]([0-9]{4})+", "", s)
         try:
             return datetime.strptime(s, '%Y-%m-%dT%H:%M:%SZ')
         except ValueError:
             try:
                 return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
             except ValueError:
-                pass
+                try:
+                    return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S')
+                except ValueError:
+                    try:
+                        return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%f')
+                    except ValueError:
+                        pass
         return None

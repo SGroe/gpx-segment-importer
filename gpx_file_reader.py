@@ -1,10 +1,10 @@
-from PyQt4.QtCore import QVariant
 # Initialize Qt resources from file resources.py
 from xml.etree import ElementTree
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsField, QgsGeometry, QgsFeature, QgsPoint, QgsVectorLayer,\
     QgsCoordinateReferenceSystem
 from datatype_definition import DataTypeDefinition, DataTypes
 from gpx_feature_builder import GpxFeatureBuilder
+from geom_tools import GeomTools
 import os
 
 
@@ -47,10 +47,15 @@ class GpxFileReader:
 
         return True if self.error_message == '' else False
 
-    def import_gpx_file(self, file_path, output_directory, attribute_select="Last", use_wgs84=True, overwrite=False):
+    def import_gpx_file(self, file_path, output_directory, attribute_select="Last", use_wgs84=True,
+                        calculate_speed=False, overwrite=False):
         """ Imports the data from the GPX file and create the vector layer """
 
         self.error_message = ''
+
+        if calculate_speed:
+            self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
+            self.attribute_definitions.append(DataTypeDefinition('_distance', DataTypes.Double, True, ''))
 
         tree = ElementTree.parse(file_path)
         root = tree.getroot()
@@ -74,16 +79,22 @@ class GpxFileReader:
                     # add a feature with first/last/both attributes
                     attributes = dict()
                     if attribute_select == 'First':
-                        for child in prev_track_point:
-                            self._add_attribute(attributes, child, '')
+                        self.add_attributes(attributes, prev_track_point, '')
                     elif attribute_select == 'Last':
-                        for child in track_point:
-                            self._add_attribute(attributes, child, '')
+                        self.add_attributes(attributes, track_point, '')
                     elif attribute_select == 'Both':
-                        for child in prev_track_point:
-                            self._add_attribute(attributes, child, 'a_')
-                        for child in track_point:
-                            self._add_attribute(attributes, child, 'b_')
+                        self.add_attributes(attributes, prev_track_point, 'a_')
+                        self.add_attributes(attributes, track_point, 'b_')
+
+                    if calculate_speed:
+                        time_a = DataTypes.create_date(prev_track_point.find('gpx:time', self.namespace).text)
+                        time_b = DataTypes.create_date(track_point.find('gpx:time', self.namespace).text)
+
+                        attributes['_distance'] = GeomTools.distance(previous_point, new_point)
+
+                        if time_a is not None or time_b is not None:
+                            attributes['_speed'] = GeomTools.calculate_speed(time_a, time_b, previous_point, new_point)
+
                     vector_layer_builder.add_feature([previous_point, new_point], attributes)
 
                 prev_track_point = track_point
@@ -98,19 +109,19 @@ class GpxFileReader:
             if element.get('key') is not None:
                 self.attribute_definitions.append(DataTypeDefinition(
                     element.get('key'),
-                    DataTypes._detect_data_type(element.get('value')),
+                    DataTypes.detect_data_type(element.get('value')),
                     element.get('value') is not None and element.get('value') != '',
                     element.get('value')))
             else:
                 self.attribute_definitions.append(DataTypeDefinition(
                     self.normalize(element.tag),
-                    DataTypes._detect_data_type(element.text),
+                    DataTypes.detect_data_type(element.text),
                     element.text is not None and element.text != '',
                     element.text))
         for child in element:
             self._detect_attribute(child)
 
-    def _add_attribute(self, attributes, element, key_prefix):
+    def add_attributes(self, attributes, element, key_prefix):
         """ Reads and adds attributes to the feature """
 
         if len(element) == 0:  # only elements without children
@@ -134,7 +145,7 @@ class GpxFileReader:
                 pass
                 # print('KeyError while reading attribute ' + self.normalize(extension.tag))
         for child in element:
-            self._add_attribute(attributes, child, key_prefix)
+            self.add_attributes(attributes, child, key_prefix)
 
     def _get_attribute_definition(self, key):
         for attribute in self.attribute_definitions:

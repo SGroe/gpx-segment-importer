@@ -261,6 +261,7 @@ class GpxSegmentImporter:
                 #         overwrite = True
 
                 use_wgs84 = True if self.dlg.chkUseWgs84.isChecked() else False
+                calculate_speed = True if self.dlg.chkCalculateSpeed.isChecked() else False
                 attribute_select = "Both"
                 if self.dlg.radioButtonFirst.isChecked():
                     attribute_select = "First"
@@ -268,7 +269,8 @@ class GpxSegmentImporter:
                     attribute_select = "Last"
 
                 for gpx_file in self._gpx_files:
-                    self.gpx_file_reader.import_gpx_file(gpx_file, self._output_directory, attribute_select, use_wgs84, overwrite)
+                    self.gpx_file_reader.import_gpx_file(gpx_file, self._output_directory, attribute_select, use_wgs84,
+                                                         calculate_speed, overwrite)
                     self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
 
     def initialize(self):
