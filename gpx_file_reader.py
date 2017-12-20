@@ -5,9 +5,7 @@ from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsField, QgsGeometry
     QgsCoordinateReferenceSystem
 from datatype_definition import DataTypeDefinition, DataTypes
 from gpx_feature_builder import GpxFeatureBuilder
-from datetime import *
 import os
-import math
 
 
 class GpxFileReader:
@@ -100,13 +98,13 @@ class GpxFileReader:
             if element.get('key') is not None:
                 self.attribute_definitions.append(DataTypeDefinition(
                     element.get('key'),
-                    self._detect_data_type(element.get('value')),
+                    DataTypes._detect_data_type(element.get('value')),
                     element.get('value') is not None and element.get('value') != '',
                     element.get('value')))
             else:
                 self.attribute_definitions.append(DataTypeDefinition(
                     self.normalize(element.tag),
-                    self._detect_data_type(element.text),
+                    DataTypes._detect_data_type(element.text),
                     element.text is not None and element.text != '',
                     element.text))
         for child in element:
@@ -126,11 +124,11 @@ class GpxFileReader:
                     attribute = self._get_attribute_definition(self.normalize(element.tag))
                     attribute.example_value = element.text
 
-                if attribute.datatype is DataTypes.Integer and self.str_is_int(attribute.example_value) or \
-                        attribute.datatype is DataTypes.Double and self.str_is_double(attribute.example_value) or \
+                if attribute.datatype is DataTypes.Integer and DataTypes.str_is_int(attribute.example_value) or \
+                        attribute.datatype is DataTypes.Double and DataTypes.str_is_double(attribute.example_value) or \
                         attribute.datatype is DataTypes.String:
                     attributes[key_prefix + attribute.attribute_key_modified] = attribute.example_value
-                elif attribute.datatype is DataTypes.Boolean and self.str_is_boolean(attribute.example_value):
+                elif attribute.datatype is DataTypes.Boolean and DataTypes.str_is_boolean(attribute.example_value):
                     attributes[key_prefix + attribute.attribute_key_modified] = str(attribute.example_value)
             except KeyError:
                 pass
@@ -144,18 +142,6 @@ class GpxFileReader:
                 return attribute
         return None
 
-    def _detect_data_type(self, text):
-        if self.str_is_int(text):
-            return DataTypes.Integer
-        elif self.str_is_double(text):
-            return DataTypes.Double
-        elif self.str_is_boolean(text):
-            return DataTypes.Boolean
-        # elif self.str_is_date(extension.text):
-        #     retrun "Date"
-        else:
-            return DataTypes.String
-
     @staticmethod
     def is_equal_coordinate(previous_point, new_point):
         return previous_point.x() == new_point.x() and previous_point.y() == new_point.y()
@@ -167,67 +153,3 @@ class GpxFileReader:
             return tag
         else:
             return name
-
-    @staticmethod
-    def str_is_int(string):
-        if string is None:
-            return False
-        try:
-            int(string)
-            return True
-        except ValueError:
-            return False
-        # except TypeError:
-        #     print "TypeError int " + str(string)
-        #     return False
-
-    @staticmethod
-    def str_is_boolean(string):
-        if string is None:
-            return False
-        if string in ['true', 'false', 'TRUE', 'FALSE', 1, 0, 't', 'f']:
-            return True
-        return False
-
-    @staticmethod
-    def str_is_double(string):
-        if string is None:
-            return False
-        try:
-            float(string)
-            return True
-        except ValueError:
-            return False
-        except TypeError:
-            print "TypeError double " + str(string)
-            return False
-
-    @staticmethod
-    def str_is_date(string):
-        if string is None:
-            return None
-        elif GpxFileReader.create_date(string) is not None:
-            return True
-        else:
-            return False
-
-    @staticmethod
-    def string_to_boolean(string):
-        print string
-        if string is True or string in ['true', 'TRUE', '1', 't']:
-            return True
-        return False
-
-    @staticmethod
-    def create_date(s):
-        if s is None:
-            return None
-        try:
-            return datetime.strptime(s, '%Y-%m-%dT%H:%M:%SZ')
-        except ValueError:
-            try:
-                return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
-            except ValueError:
-                pass
-        return None
-

@@ -1,3 +1,4 @@
+from datetime import *
 
 
 class DataTypeDefinition:
@@ -34,3 +35,79 @@ class DataTypes():
         elif value == 'Date':
             return DataTypes.Date
         return DataTypes.Undefined
+
+    @staticmethod
+    def _detect_data_type(text):
+        if DataTypes.str_is_int(text):
+            return DataTypes.Integer
+        elif DataTypes.str_is_double(text):
+            return DataTypes.Double
+        elif DataTypes.str_is_boolean(text):
+            return DataTypes.Boolean
+        # elif self.str_is_date(extension.text):
+        #     return DataTypes.Date
+        else:
+            return DataTypes.String
+
+    @staticmethod
+    def str_is_int(string):
+        if string is None:
+            return False
+        try:
+            int(string)
+            return True
+        except ValueError:
+            return False
+        # except TypeError:
+        #     print "TypeError int " + str(string)
+        #     return False
+
+    @staticmethod
+    def str_is_boolean(string):
+        if string is None:
+            return False
+        if string in ['true', 'false', 'TRUE', 'FALSE', 1, 0, 't', 'f']:
+            return True
+        return False
+
+    @staticmethod
+    def str_is_double(string):
+        if string is None:
+            return False
+        try:
+            float(string)
+            return True
+        except ValueError:
+            return False
+        except TypeError:
+            print "TypeError double " + str(string)
+            return False
+
+    @staticmethod
+    def str_is_date(string):
+        if string is None:
+            return None
+        elif DataTypes.create_date(string) is not None:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def string_to_boolean(string):
+        print string
+        if string is True or string in ['true', 'TRUE', '1', 't']:
+            return True
+        return False
+
+    @staticmethod
+    def create_date(s):
+        if s is None:
+            return None
+        try:
+            return datetime.strptime(s, '%Y-%m-%dT%H:%M:%SZ')
+        except ValueError:
+            try:
+                return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
+            except ValueError:
+                pass
+        return None
