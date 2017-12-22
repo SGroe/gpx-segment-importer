@@ -26,8 +26,9 @@ class GpxFeatureBuilder:
                         continue
 
                     key = str(attribute.attribute_key_modified)
-                    if attribute_select == 'Both' and attribute.attribute_key_modified != '_speed' \
-                            and attribute.attribute_key_modified != '_distance':
+                    if attribute_select == 'Both' and attribute.attribute_key_modified != '_distance' \
+                            and attribute.attribute_key_modified != '_duration' \
+                            and attribute.attribute_key_modified != '_speed':
                         if attribute_select_option == 'First':
                             key = 'a_' + key
                         elif attribute_select_option == 'Last':

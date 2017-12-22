@@ -14,7 +14,7 @@ The native GPS eXchange Format (GPX) file importer for the open-source geo-infor
 * Select one or multiple GPX files with the same data structure at once and create short line segments between the track points.
 * Read all attributes available from each track point at the segment start and/or end. This includes the timestamp and the elevation as well as any other attributes added to a track point.
 * To gain full control over the data, you can edit the attribute table before creating the segment layer. The user can select the attributes that should be included in the layer, modify the attribute label and change the data type (integer, double, boolean or string) if the automatic type detection failed, e.g. at numeric data that contains “Null” or “None” values.
-* Optionally calculate distance and speed between track points.
+* Optionally calculate distance, duration and speed between track points.
 * The plugin detects attributes that do not have a value and deselects it. Values can still be selected manually.
 * Create a temporary memory layer or write the layer to a file (Shapefile in current version, future plans are to switch to GeoPackage).
 

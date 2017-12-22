@@ -18,6 +18,13 @@ class GeomTools:
         return float(distance / time_diff_h)
 
     @staticmethod
+    def calculate_duration(time_a, time_b):
+        duration = (time_b - time_a).total_seconds()
+        if float(duration):
+            return duration
+        return None
+
+    @staticmethod
     def distance(start, end):
         distance = QgsDistanceArea()
         distance.setEllipsoidalMode(True)

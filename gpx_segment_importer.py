@@ -80,7 +80,7 @@ class GpxSegmentImporter:
 
         self._gpx_files = list()
         self._output_directory = None
-        self._gpx_directory_default = ''
+        self.gpx_directory_default = ''
         self._output_directory_default = ''
         self.gpx_file_reader = GpxFileReader()
 
@@ -197,7 +197,7 @@ class GpxSegmentImporter:
 
     def select_gpx_files(self):
         # Get GPX files
-        self._gpx_files = QFileDialog.getOpenFileNames(self.dlg, "Select GPX files ...", self._gpx_directory_default, '*.gpx')
+        self._gpx_files = QFileDialog.getOpenFileNames(self.dlg, "Select GPX files ...", self.gpx_directory_default, '*.gpx')
         if len(self._gpx_files) == 1:
             self.dlg.txtSelectedFiles.setText(str(os.path.basename(self._gpx_files[0])))
         else:
@@ -205,7 +205,7 @@ class GpxSegmentImporter:
 
         # remember gpx directory path
         if len(self._gpx_files) > 0:
-            self._gpx_directory_default = os.path.abspath(self._gpx_files[0])
+            self.gpx_directory_default = os.path.abspath(self._gpx_files[0])
 
         # load attribute data of first GPX file
         if len(self._gpx_files) >= 1:

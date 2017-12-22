@@ -54,8 +54,9 @@ class GpxFileReader:
         self.error_message = ''
 
         if calculate_speed:
-            self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_distance', DataTypes.Double, True, ''))
+            self.attribute_definitions.append(DataTypeDefinition('_duration', DataTypes.Double, True, ''))
+            self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
 
         tree = ElementTree.parse(file_path)
         root = tree.getroot()
@@ -93,6 +94,7 @@ class GpxFileReader:
                         attributes['_distance'] = GeomTools.distance(previous_point, new_point)
 
                         if time_a is not None or time_b is not None:
+                            attributes['_duration'] = GeomTools.calculate_duration(time_a, time_b)
                             attributes['_speed'] = GeomTools.calculate_speed(time_a, time_b, previous_point, new_point)
 
                     vector_layer_builder.add_feature([previous_point, new_point], attributes)
