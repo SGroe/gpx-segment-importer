@@ -81,7 +81,7 @@ class DataTypes():
         except ValueError:
             return False
         except TypeError:
-            print "TypeError double " + str(string)
+            print("TypeError double " + str(string))
             return False
 
     @staticmethod
@@ -95,7 +95,6 @@ class DataTypes():
 
     @staticmethod
     def string_to_boolean(string):
-        print string
         if string is True or string in ['true', 'TRUE', '1', 't']:
             return True
         return False

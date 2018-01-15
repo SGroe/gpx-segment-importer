@@ -127,7 +127,7 @@
      <item>
       <widget class="QCheckBox" name="chkCalculateSpeed">
        <property name="text">
-        <string>Calculate distance and speed between track points</string>
+        <string>Calculate distance, speed und duration between track points</string>
        </property>
       </widget>
      </item>

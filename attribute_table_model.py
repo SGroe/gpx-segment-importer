@@ -1,7 +1,6 @@
 import operator
-from PyQt4.QtCore import Qt, QAbstractTableModel, QVariant, SIGNAL
-from PyQt4.QtGui import QTableView, QStandardItem, QStandardItemModel
-from datatype_definition import DataTypes
+from PyQt4.QtCore import Qt, QAbstractTableModel
+from .datatype_definition import DataTypes
 
 
 class AttributeTableModel(QAbstractTableModel):

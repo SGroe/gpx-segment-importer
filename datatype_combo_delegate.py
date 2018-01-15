@@ -1,4 +1,4 @@
-from PyQt4.QtCore import SIGNAL, SLOT, pyqtSlot, Qt
+from PyQt4.QtCore import pyqtSlot, Qt
 from PyQt4.QtGui import QItemDelegate, QComboBox, QApplication, QStyle
 
 
@@ -19,8 +19,6 @@ class DatatypeComboDelegate(QItemDelegate):
     def createEditor(self, widget, option, index):
         editor = QComboBox(widget)
         editor.addItems(self._items)
-        # self.connect(editor, SIGNAL("currentIndexChanged(int)"),
-        #              self, SLOT("currentIndexChanged()"))
         return editor
 
     def setEditorData(self, editor, index):

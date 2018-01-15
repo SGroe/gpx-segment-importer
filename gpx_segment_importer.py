@@ -26,11 +26,11 @@ import resources
 from PyQt4.QtCore import QVariant, QSettings, QTranslator, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon, QFileDialog, QMessageBox, QWidget
 # Plugin classes
-from gpx_file_reader import GpxFileReader
-from attribute_table_model import AttributeTableModel
-from datatype_combo_delegate import DatatypeComboDelegate
+from .gpx_file_reader import GpxFileReader
+from .attribute_table_model import AttributeTableModel
+from .datatype_combo_delegate import DatatypeComboDelegate
 # dialog
-from gpx_segment_importer_dialog import GpxSegmentImporterDialog
+from .gpx_segment_importer_dialog import GpxSegmentImporterDialog
 # other
 import os.path
 
@@ -78,10 +78,10 @@ class GpxSegmentImporter:
         self.dlg.btnSelectFiles.clicked.connect(self.select_gpx_files)
         self.dlg.btnOutputDirectory.clicked.connect(self.select_output_directory)
 
-        self._gpx_files = list()
-        self._output_directory = None
-        self.gpx_directory_default = ''
-        self._output_directory_default = ''
+        self.gpx_files = list()
+        self.output_directory = None
+        self.gpx_directory_default = QSettings().value('gpx-segment-importer/default_input_dir', '')
+        self.output_directory_default = QSettings().value('gpx-segment-importer/default_output_dir', '')
         self.gpx_file_reader = GpxFileReader()
 
     # noinspection PyMethodMayBeStatic
@@ -197,47 +197,52 @@ class GpxSegmentImporter:
 
     def select_gpx_files(self):
         # Get GPX files
-        self._gpx_files = QFileDialog.getOpenFileNames(self.dlg, "Select GPX files ...", self.gpx_directory_default, '*.gpx')
-        if len(self._gpx_files) == 1:
-            self.dlg.txtSelectedFiles.setText(str(os.path.basename(self._gpx_files[0])))
+        self.gpx_files = QFileDialog.getOpenFileNames(self.dlg, "Select GPX files ...", self.gpx_directory_default,
+                                                      '*.gpx')
+        if len(self.gpx_files) == 1:
+            self.dlg.txtSelectedFiles.setText(str(os.path.basename(self.gpx_files[0])))
         else:
-            self.dlg.txtSelectedFiles.setText(str(len(self._gpx_files)) + " files")
+            self.dlg.txtSelectedFiles.setText(str(len(self.gpx_files)) + " files")
 
         # remember gpx directory path
-        if len(self._gpx_files) > 0:
-            self.gpx_directory_default = os.path.abspath(self._gpx_files[0])
+        if len(self.gpx_files) > 0:
+            self.gpx_directory_default = os.path.abspath(self.gpx_files[0])
+            # save as default input directory
+            QSettings().setValue("gpx-segment-importer/default_input_dir", self.gpx_directory_default)
 
         # load attribute data of first GPX file
-        if len(self._gpx_files) >= 1:
-            self.gpx_file_reader.get_table_data(self._gpx_files[0])
+        if len(self.gpx_files) >= 1:
+            self.gpx_file_reader.get_table_data(self.gpx_files[0])
             self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
             self.create_table()
             self.dlg.tableAttributes.setEnabled(True)
 
     def select_output_directory(self):
-        if self._output_directory is None:
-            self._output_directory = QFileDialog.getExistingDirectory(self.dlg, "Output directory",
-                                                                      self._output_directory_default)
-            if os.path.exists(self._output_directory):
-                self.dlg.txtOutputDirectory.setText(str(self._output_directory))
+        if self.output_directory is None:
+            self.output_directory = QFileDialog.getExistingDirectory(self.dlg, "Output directory",
+                                                                     self.output_directory_default)
+            if os.path.exists(self.output_directory):
+                self.dlg.txtOutputDirectory.setText(str(self.output_directory))
                 self.dlg.btnOutputDirectory.setText('Remove output directory')
-                self._output_directory_default = self._output_directory
-                if self.check_if_file_exists(self._output_directory, self._gpx_files):
+                self.output_directory_default = self.output_directory
+                # save as default output directory
+                QSettings().setValue("gpx-segment-importer/default_output_dir", self.output_directory_default)
+                if self.check_if_file_exists(self.output_directory, self.gpx_files):
                     self.dlg.lblFeedback.setText('Output file(s) already exist!')
             else:
-                self._output_directory = None
+                self.output_directory = None
                 self.dlg.txtOutputDirectory.setText('[Insert as memory layer]')
                 self.dlg.btnOutputDirectory.setText('Output directory')
                 self.dlg.lblFeedback.setText('')
         else:
-            self._output_directory = None
+            self.output_directory = None
             self.dlg.txtOutputDirectory.setText('[Insert as memory layer]')
             self.dlg.btnOutputDirectory.setText('Output directory')
 
     @staticmethod
     def check_if_file_exists(directory, files):
         for f in files:
-            if os.path.exists(directory + '/' + os.path.basename(f) + '.shp'):
+            if os.path.exists(directory + '/' + os.path.basename(f) + '.gpkg'):
                 return True
         return False
 
@@ -250,7 +255,7 @@ class GpxSegmentImporter:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
-            if self._gpx_files is not None and len(self._gpx_files) > 0:
+            if self.gpx_files is not None and len(self.gpx_files) > 0:
                 overwrite = False
                 # if self._output_directory is not None and self.check_if_file_exists(self._output_directory,
                 #                                                                     self._gpx_files):
@@ -268,16 +273,16 @@ class GpxSegmentImporter:
                 elif self.dlg.radioButtonLast.isChecked():
                     attribute_select = "Last"
 
-                for gpx_file in self._gpx_files:
-                    self.gpx_file_reader.import_gpx_file(gpx_file, self._output_directory, attribute_select, use_wgs84,
+                for gpx_file in self.gpx_files:
+                    self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select, use_wgs84,
                                                          calculate_speed, overwrite)
                     self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
 
     def initialize(self):
-        self._gpx_files = list()
+        self.gpx_files = list()
         # self._attribute_table_data = list()
         self.dlg.tableAttributes.setEnabled(False)
-        self._output_directory = None
+        self.output_directory = None
         self.dlg.txtSelectedFiles.clear()
         self.dlg.btnOutputDirectory.setText('Output directory')
         self.dlg.txtOutputDirectory.clear()

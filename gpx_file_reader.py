@@ -2,9 +2,9 @@
 from xml.etree import ElementTree
 from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsField, QgsGeometry, QgsFeature, QgsPoint, QgsVectorLayer,\
     QgsCoordinateReferenceSystem
-from datatype_definition import DataTypeDefinition, DataTypes
-from gpx_feature_builder import GpxFeatureBuilder
-from geom_tools import GeomTools
+from .datatype_definition import DataTypeDefinition, DataTypes
+from .gpx_feature_builder import GpxFeatureBuilder
+from .geom_tools import GeomTools
 import os
 
 
@@ -102,7 +102,9 @@ class GpxFileReader:
                 prev_track_point = track_point
 
         vector_layer_builder.save_file(output_directory, overwrite)
-        self.error_message = vector_layer_builder.error_message
+        if vector_layer_builder.error_message != '':
+            self.error_message = vector_layer_builder.error_message
+            print(self.error_message)
 
     def _detect_attribute(self, element):
         """ Either detects the attribute or recursively finds child elements """

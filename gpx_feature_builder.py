@@ -1,8 +1,8 @@
 from PyQt4.QtCore import QVariant
 # Initialize Qt resources from file resources.py
 from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry, QgsFeature, QgsGeometry
-from datatype_definition import DataTypes
-from vector_file_writer import VectorFileWriter
+from .datatype_definition import DataTypes
+from .vector_file_writer import VectorFileWriter
 import os
 
 
@@ -40,6 +40,7 @@ class GpxFeatureBuilder:
                         attributes.append(QgsField(key, QVariant.Double, 'Real'))
                     elif attribute.datatype == DataTypes.Boolean:
                         # QVariant.Bool is not available for QgsField
+                        # attributes.append(QgsField(key, QVariant.Bool, 'Boolean'))
                         attributes.append(QgsField(key, QVariant.String, 'String'))
                     # elif attribute.datatype == DataTypes.Date:
                     #     attributes.append(QgsField(key, QVariant.DateTime, 'String'))

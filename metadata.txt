@@ -10,7 +10,7 @@
 name=GPX Segment Importer
 qgisMinimumVersion=2.0
 description=This plugin imports an GPX file and creates short line segments between the track points
-version=1.2
+version=1.3
 author=Simon Gröchenig @ Salzburg Research
 email=simon.groechenig@salzburgresearch.at
 
@@ -18,9 +18,10 @@ about=This plugin imports an GPX file and creates short line segments between th
     * Select one or multiple GPX files with the same data structure at once and create short line segments between the track points.
     * Read all attributes available from each track point at the segment start and/or end. This includes the timestamp and the elevation as well as any other attributes added to a track point.
     * To gain full control over the data, you can edit the attribute table before creating the segment layer. The user can select the attributes that should be included in the layer, modify the attribute label and change the data type (integer, double, boolean or string) if the automatic type detection failed, e.g. at numeric data that contains “Null” or “None” values.
-    * Optionally calculate distance and speed between track points.
     * The plugin detects attributes that do not have a value and deselects it. Values can still be selected manually.
-    * Create a temporary memory layer or write the layer to a file (Shapefile in current version, future plans are to switch to GeoPackage).
+    * Optionally use an alternative coordinate reference system (default is EPSG:4326).
+    * Optionally calculate distance, speed and duration between track points.
+    * Create a temporary memory layer or write the layer to a GeoPackage.
 
 tracker=https://github.com/SGroe/gpx-segment-importer/issues
 repository=https://github.com/SGroe/gpx-segment-importer
@@ -30,6 +31,8 @@ repository=https://github.com/SGroe/gpx-segment-importer
 
 # Uncomment the following line and add your changelog:
 changelog=1.3 (future)
+    - Write track layer in GeoPackage instead of ESRI Shapefile
+    - Store last input/output directory in QGIS settings
     - Optionally calculate duration between track points
     1.2 (2017-12-21)
     - Option to add attributes from start/end/both track point(s)
