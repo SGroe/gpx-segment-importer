@@ -8,9 +8,9 @@
 
 [general]
 name=GPX Segment Importer
-qgisMinimumVersion=2.0
+qgisMinimumVersion=3.0
 description=This plugin imports an GPX file and creates short line segments between the track points
-version=1.3
+version=1.4
 author=Simon Gröchenig @ Salzburg Research
 email=simon.groechenig@salzburgresearch.at
 
@@ -21,7 +21,7 @@ about=This plugin imports an GPX file and creates short line segments between th
     * The plugin detects attributes that do not have a value and deselects it. Values can still be selected manually.
     * Optionally use an alternative coordinate reference system (default is EPSG:4326).
     * Optionally calculate distance, speed and duration between track points.
-    * Create a temporary memory layer or write the layer to a GeoPackage.
+    * Create a temporary memory layer or write the layer to a GeoPackage
 
 tracker=https://github.com/SGroe/gpx-segment-importer/issues
 repository=https://github.com/SGroe/gpx-segment-importer
@@ -30,7 +30,9 @@ repository=https://github.com/SGroe/gpx-segment-importer
 # Recommended items:
 
 # Uncomment the following line and add your changelog:
-changelog=1.3 (future)
+changelog=1.4 (future)
+    - Support for QGIS3
+    1.3 (future)
     - Write track layer in GeoPackage instead of ESRI Shapefile
     - Store last input/output directory in QGIS settings
     - Optionally calculate duration between track points
@@ -50,7 +52,7 @@ homepage=https://github.com/SGroe/gpx-segment-importer
 category=Vector
 icon=icon.svg
 # experimental flag
-experimental=False
+experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False

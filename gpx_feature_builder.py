@@ -1,6 +1,6 @@
-from PyQt4.QtCore import QVariant
+from PyQt5.QtCore import QVariant
 # Initialize Qt resources from file resources.py
-from qgis.core import QgsVectorLayer, QgsField, QgsMapLayerRegistry, QgsFeature, QgsGeometry
+from qgis.core import QgsProject, QgsVectorLayer, QgsField, QgsFeature, QgsGeometry
 from .datatype_definition import DataTypes
 from .vector_file_writer import VectorFileWriter
 import os
@@ -40,7 +40,6 @@ class GpxFeatureBuilder:
                         attributes.append(QgsField(key, QVariant.Double, 'Real'))
                     elif attribute.datatype == DataTypes.Boolean:
                         # QVariant.Bool is not available for QgsField
-                        # attributes.append(QgsField(key, QVariant.Bool, 'Boolean'))
                         attributes.append(QgsField(key, QVariant.String, 'String'))
                     # elif attribute.datatype == DataTypes.Date:
                     #     attributes.append(QgsField(key, QVariant.DateTime, 'String'))
@@ -53,7 +52,7 @@ class GpxFeatureBuilder:
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPolyline(line_coordinates))
         feature.setFields(self.vector_layer.pendingFields(), True)
-        for attribute_key in attributes.keys():
+        for attribute_key in list(attributes.keys()):
             try:
                 feature.setAttribute(attribute_key, attributes[attribute_key])
             except KeyError:
@@ -73,9 +72,10 @@ class GpxFeatureBuilder:
                 if os.path.isdir(output_directory):
                     vector_layer_writer = VectorFileWriter(output_directory)
                     output_file_path = vector_layer_writer.write(self.vector_layer, overwrite)
+
                     if output_file_path is not None:
                         shp_layer = QgsVectorLayer(output_file_path, os.path.basename(output_file_path), 'ogr')
-                        QgsMapLayerRegistry.instance().addMapLayer(shp_layer)
+                        QgsProject.instance().addMapLayer(shp_layer)
                     else:
                         self.error_message = 'Writing vector layer failed...'
                         return False
@@ -83,5 +83,5 @@ class GpxFeatureBuilder:
                     self.error_message = 'Cannot find output directory'
                     return False
             else:
-                QgsMapLayerRegistry.instance().addMapLayer(self.vector_layer)
+                QgsProject.instance().addMapLayer(self.vector_layer)
         return True

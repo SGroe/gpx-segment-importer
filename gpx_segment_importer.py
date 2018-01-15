@@ -21,10 +21,11 @@
  ***************************************************************************/
 """
 # Initialize Qt resources from file resources.py
-import resources
-# PyQt4 imports
-from PyQt4.QtCore import QVariant, QSettings, QTranslator, QCoreApplication
-from PyQt4.QtGui import QAction, QIcon, QFileDialog, QMessageBox, QWidget
+from .resources import *
+# PyQt5 imports
+from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication
+from PyQt5.QtGui import QIcon
+from PyQt5 import QtWidgets
 # Plugin classes
 from .gpx_file_reader import GpxFileReader
 from .attribute_table_model import AttributeTableModel
@@ -62,7 +63,7 @@ class GpxSegmentImporter:
             self.translator = QTranslator()
             self.translator.load(locale_path)
 
-            if PyQt4.PYQT_VERSION_STR > '4.3.3':
+            if PyQt5.PYQT_VERSION_STR > '4.3.3':
                 QCoreApplication.installTranslator(self.translator)
 
         # Declare instance attributes
@@ -153,7 +154,7 @@ class GpxSegmentImporter:
         # self.dlg = GpxSegmentImporterDialog()
 
         icon = QIcon(icon_path)
-        action = QAction(icon, text, parent)
+        action = QtWidgets.QAction(icon, text, parent)
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
 
@@ -197,8 +198,8 @@ class GpxSegmentImporter:
 
     def select_gpx_files(self):
         # Get GPX files
-        self.gpx_files = QFileDialog.getOpenFileNames(self.dlg, "Select GPX files ...", self.gpx_directory_default,
-                                                      '*.gpx')
+        self.gpx_files = QtWidgets.QFileDialog.getOpenFileNames(self.dlg, "Select GPX files ...",
+                                                                self.gpx_directory_default, 'GPX tracks (*.gpx)')[0]
         if len(self.gpx_files) == 1:
             self.dlg.txtSelectedFiles.setText(str(os.path.basename(self.gpx_files[0])))
         else:
@@ -219,8 +220,8 @@ class GpxSegmentImporter:
 
     def select_output_directory(self):
         if self.output_directory is None:
-            self.output_directory = QFileDialog.getExistingDirectory(self.dlg, "Output directory",
-                                                                     self.output_directory_default)
+            self.output_directory = QtWidgets.QFileDialog.getExistingDirectory(self.dlg, "Output directory",
+                                                                               self.output_directory_default)
             if os.path.exists(self.output_directory):
                 self.dlg.txtOutputDirectory.setText(str(self.output_directory))
                 self.dlg.btnOutputDirectory.setText('Remove output directory')
@@ -319,7 +320,7 @@ class GpxSegmentImporter:
         # set column width to fit contents
         table_view.resizeColumnsToContents()
         # set row height
-        for row in xrange(len(self.gpx_file_reader.attribute_definitions)):
+        for row in range(len(self.gpx_file_reader.attribute_definitions)):
             table_view.setRowHeight(row, 20)
         # disable sorting
         table_view.setSortingEnabled(False)

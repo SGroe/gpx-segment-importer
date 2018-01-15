@@ -23,13 +23,13 @@
 
 import os
 
-from PyQt4 import QtGui, uic
+from PyQt5 import QtWidgets, uic
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'gpx_segment_importer_dialog_base.ui'))
 
 
-class GpxSegmentImporterDialog(QtGui.QDialog, FORM_CLASS):
+class GpxSegmentImporterDialog(QtWidgets.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
         """Constructor."""
         super(GpxSegmentImporterDialog, self).__init__(parent)

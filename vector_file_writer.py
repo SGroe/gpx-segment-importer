@@ -17,7 +17,7 @@ class VectorFileWriter:
         while True and appendix < 999:
             if os.path.exists(output_file_path) is False or overwrite is True:
                 error = QgsVectorFileWriter.writeAsVectorFormat(vector_layer, output_file_path, 'utf-8',
-                                                                vector_layer.crs(), 'gpkg')
+                                                                vector_layer.crs(), 'gpkg')[0]
                 if error == QgsVectorFileWriter.NoError:
                     return output_file_path
                 else:

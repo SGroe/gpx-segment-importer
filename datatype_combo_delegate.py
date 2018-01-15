@@ -1,5 +1,5 @@
-from PyQt4.QtCore import pyqtSlot, Qt
-from PyQt4.QtGui import QItemDelegate, QComboBox, QApplication, QStyle
+from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtWidgets import QItemDelegate, QComboBox, QApplication, QStyle
 
 
 # https://stackoverflow.com/questions/41207485/how-to-create-combo-box-qitemdelegate

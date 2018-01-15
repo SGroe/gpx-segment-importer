@@ -1,6 +1,6 @@
 # Initialize Qt resources from file resources.py
 from xml.etree import ElementTree
-from qgis.core import QgsVectorLayer, QgsMapLayerRegistry, QgsField, QgsGeometry, QgsFeature, QgsPoint, QgsVectorLayer,\
+from qgis.core import QgsVectorLayer, QgsField, QgsGeometry, QgsFeature, QgsPoint, QgsVectorLayer,\
     QgsCoordinateReferenceSystem
 from .datatype_definition import DataTypeDefinition, DataTypes
 from .gpx_feature_builder import GpxFeatureBuilder
@@ -131,7 +131,6 @@ class GpxFileReader:
         if len(element) == 0:  # only elements without children
             try:
                 # check if attribute value is
-                attribute = None
                 if element.get('key') is not None:
                     attribute = self._get_attribute_definition(element.get('key'))
                     attribute.example_value = element.get('value')

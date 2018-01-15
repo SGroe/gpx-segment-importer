@@ -1,5 +1,5 @@
 import operator
-from PyQt4.QtCore import Qt, QAbstractTableModel
+from PyQt5.QtCore import Qt, QAbstractTableModel
 from .datatype_definition import DataTypes
 
 
