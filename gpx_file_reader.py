@@ -1,6 +1,6 @@
 # Initialize Qt resources from file resources.py
 from xml.etree import ElementTree
-from qgis.core import QgsVectorLayer, QgsField, QgsGeometry, QgsFeature, QgsPoint, QgsVectorLayer,\
+from qgis.core import QgsVectorLayer, QgsField, QgsGeometry, QgsFeature, QgsPointXY, QgsVectorLayer,\
     QgsCoordinateReferenceSystem
 from .datatype_definition import DataTypeDefinition, DataTypes
 from .gpx_feature_builder import GpxFeatureBuilder
@@ -71,8 +71,8 @@ class GpxFileReader:
 
             for track_point in track_segment.findall('gpx:trkpt', self.namespace):
                 if prev_track_point is not None:
-                    previous_point = QgsPoint(float(prev_track_point.get('lon')), float(prev_track_point.get('lat')))
-                    new_point = QgsPoint(float(track_point.get('lon')), float(track_point.get('lat')))
+                    previous_point = QgsPointXY(float(prev_track_point.get('lon')), float(prev_track_point.get('lat')))
+                    new_point = QgsPointXY(float(track_point.get('lon')), float(track_point.get('lat')))
 
                     if self.is_equal_coordinate(previous_point, new_point):
                         continue
@@ -130,12 +130,16 @@ class GpxFileReader:
 
         if len(element) == 0:  # only elements without children
             try:
-                # check if attribute value is
+                # check if attribute value is available
                 if element.get('key') is not None:
                     attribute = self._get_attribute_definition(element.get('key'))
+                    if attribute is None:
+                        return
                     attribute.example_value = element.get('value')
                 else:
                     attribute = self._get_attribute_definition(self.normalize(element.tag))
+                    if attribute is None:
+                        return
                     attribute.example_value = element.text
 
                 if attribute.datatype is DataTypes.Integer and DataTypes.str_is_int(attribute.example_value) or \

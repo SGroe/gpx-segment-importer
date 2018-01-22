@@ -27,7 +27,7 @@ class GeomTools:
     @staticmethod
     def distance(start, end):
         distance = QgsDistanceArea()
-        distance.setEllipsoidalMode(True)
+        # distance.setEllipsoidalMode(True)
         distance.setEllipsoid('WGS84')
         return distance.measureLine(start, end)
 

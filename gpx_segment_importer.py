@@ -7,7 +7,7 @@
                               -------------------
         begin                : 2017-12-01
         git sha              : $Format:%H$
-        copyright            : (C) 2017 by Simon Gröchenig @ Salzburg Research
+        copyright            : (C) 2018 by Simon Gröchenig @ Salzburg Research
         email                : simon.groechenig@salzburgresearch.at
  ***************************************************************************/
 
@@ -26,6 +26,8 @@ from .resources import *
 from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5 import QtWidgets
+# QGIS imports
+from qgis.gui import QgsMessageBar
 # Plugin classes
 from .gpx_file_reader import GpxFileReader
 from .attribute_table_model import AttributeTableModel
@@ -63,13 +65,12 @@ class GpxSegmentImporter:
             self.translator = QTranslator()
             self.translator.load(locale_path)
 
-            if PyQt5.PYQT_VERSION_STR > '4.3.3':
-                QCoreApplication.installTranslator(self.translator)
+            # if PyQt5.PYQT_VERSION_STR > '4.3.3':
+            QCoreApplication.installTranslator(self.translator)
 
         # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&GpxSegmentImporter')
-        # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'GpxSegmentImporter')
         self.toolbar.setObjectName(u'GpxSegmentImporter')
 
@@ -199,7 +200,8 @@ class GpxSegmentImporter:
     def select_gpx_files(self):
         # Get GPX files
         self.gpx_files = QtWidgets.QFileDialog.getOpenFileNames(self.dlg, "Select GPX files ...",
-                                                                self.gpx_directory_default, 'GPX tracks (*.gpx)')[0]
+                                                                self.gpx_directory_default, 'GPX tracks (*.gpx)',
+                                                                options=QtWidgets.QFileDialog.ReadOnly)[0]
         if len(self.gpx_files) == 1:
             self.dlg.txtSelectedFiles.setText(str(os.path.basename(self.gpx_files[0])))
         else:
@@ -221,7 +223,8 @@ class GpxSegmentImporter:
     def select_output_directory(self):
         if self.output_directory is None:
             self.output_directory = QtWidgets.QFileDialog.getExistingDirectory(self.dlg, "Output directory",
-                                                                               self.output_directory_default)
+                                                                               self.output_directory_default,
+                                                                               options=QtWidgets.QFileDialog.ReadOnly)
             if os.path.exists(self.output_directory):
                 self.dlg.txtOutputDirectory.setText(str(self.output_directory))
                 self.dlg.btnOutputDirectory.setText('Remove output directory')
@@ -256,28 +259,39 @@ class GpxSegmentImporter:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
-            if self.gpx_files is not None and len(self.gpx_files) > 0:
-                overwrite = False
-                # if self._output_directory is not None and self.check_if_file_exists(self._output_directory,
-                #                                                                     self._gpx_files):
-                #     overwrite_question = QMessageBox.question(QWidget(), 'GPX Segment Importer',
-                #                                               "Do you want to replace the existing output files?",
-                #                                               QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-                #     if overwrite_question == QMessageBox.Yes:
-                #         overwrite = True
+            self.process_gpx_files()
 
-                use_wgs84 = True if self.dlg.chkUseWgs84.isChecked() else False
-                calculate_speed = True if self.dlg.chkCalculateSpeed.isChecked() else False
-                attribute_select = "Both"
-                if self.dlg.radioButtonFirst.isChecked():
-                    attribute_select = "First"
-                elif self.dlg.radioButtonLast.isChecked():
-                    attribute_select = "Last"
+    def process_gpx_files(self):
+        if self.gpx_files is not None and len(self.gpx_files) > 0:
 
-                for gpx_file in self.gpx_files:
-                    self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select, use_wgs84,
-                                                         calculate_speed, overwrite)
-                    self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
+            progress_message_bar = self.iface.messageBar().createMessage("Create gpx segments...")
+            progress = QtWidgets.QProgressBar()
+            progress.setMaximum(len(self.gpx_files))
+            # progress.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            progress_message_bar.layout().addWidget(progress)
+            self.iface.messageBar().pushWidget(progress_message_bar, self.iface.messageBar().INFO)
+
+            overwrite = False
+            use_wgs84 = True if self.dlg.chkUseWgs84.isChecked() else False
+            calculate_speed = True if self.dlg.chkCalculateSpeed.isChecked() else False
+            attribute_select = "Both"
+            if self.dlg.radioButtonFirst.isChecked():
+                attribute_select = "First"
+            elif self.dlg.radioButtonLast.isChecked():
+                attribute_select = "Last"
+
+            i = 0
+            for gpx_file in self.gpx_files:
+                self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select, use_wgs84,
+                                                     calculate_speed, overwrite)
+                self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
+                if self.gpx_file_reader.error_message != '':
+                    self.iface.messageBar().pushMessage("Error", self.gpx_file_reader.error_message,
+                                                        level=QgsMessageBar.CRITICAL)
+
+                i += 1
+                progress.setValue(i)
+            self.iface.messageBar().clearWidgets()
 
     def initialize(self):
         self.gpx_files = list()

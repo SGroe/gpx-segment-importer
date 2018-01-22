@@ -40,6 +40,7 @@ class GpxFeatureBuilder:
                         attributes.append(QgsField(key, QVariant.Double, 'Real'))
                     elif attribute.datatype == DataTypes.Boolean:
                         # QVariant.Bool is not available for QgsField
+                        # attributes.append(QgsField(key, QVariant.Bool, 'Boolean'))
                         attributes.append(QgsField(key, QVariant.String, 'String'))
                     # elif attribute.datatype == DataTypes.Date:
                     #     attributes.append(QgsField(key, QVariant.DateTime, 'String'))
@@ -50,8 +51,8 @@ class GpxFeatureBuilder:
 
     def add_feature(self, line_coordinates, attributes):
         feature = QgsFeature()
-        feature.setGeometry(QgsGeometry.fromPolyline(line_coordinates))
-        feature.setFields(self.vector_layer.pendingFields(), True)
+        feature.setGeometry(QgsGeometry.fromPolylineXY(line_coordinates))
+        feature.setFields(self.vector_layer.fields(), True)
         for attribute_key in list(attributes.keys()):
             try:
                 feature.setAttribute(attribute_key, attributes[attribute_key])
