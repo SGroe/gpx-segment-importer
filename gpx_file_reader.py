@@ -130,13 +130,16 @@ class GpxFileReader:
 
         if len(element) == 0:  # only elements without children
             try:
-                # check if attribute value is
-                attribute = None
+                # check if attribute value is available
                 if element.get('key') is not None:
                     attribute = self._get_attribute_definition(element.get('key'))
+                    if attribute is None:
+                        return
                     attribute.example_value = element.get('value')
                 else:
                     attribute = self._get_attribute_definition(self.normalize(element.tag))
+                    if attribute is None:
+                        return
                     attribute.example_value = element.text
 
                 if attribute.datatype is DataTypes.Integer and DataTypes.str_is_int(attribute.example_value) or \
