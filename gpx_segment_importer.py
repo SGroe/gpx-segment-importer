@@ -24,7 +24,9 @@
 import resources
 # PyQt4 imports
 from PyQt4.QtCore import QVariant, QSettings, QTranslator, QCoreApplication
-from PyQt4.QtGui import QAction, QIcon, QFileDialog, QMessageBox, QWidget
+from PyQt4.QtGui import QAction, QIcon, QFileDialog, QMessageBox, QWidget, QProgressBar
+# qgis imports
+from qgis.gui import QgsMessageBar
 # Plugin classes
 from .gpx_file_reader import GpxFileReader
 from .attribute_table_model import AttributeTableModel
@@ -255,28 +257,39 @@ class GpxSegmentImporter:
         result = self.dlg.exec_()
         # See if OK was pressed
         if result:
-            if self.gpx_files is not None and len(self.gpx_files) > 0:
-                overwrite = False
-                # if self._output_directory is not None and self.check_if_file_exists(self._output_directory,
-                #                                                                     self._gpx_files):
-                #     overwrite_question = QMessageBox.question(QWidget(), 'GPX Segment Importer',
-                #                                               "Do you want to replace the existing output files?",
-                #                                               QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-                #     if overwrite_question == QMessageBox.Yes:
-                #         overwrite = True
+            self.process_gpx_files()
 
-                use_wgs84 = True if self.dlg.chkUseWgs84.isChecked() else False
-                calculate_speed = True if self.dlg.chkCalculateSpeed.isChecked() else False
-                attribute_select = "Both"
-                if self.dlg.radioButtonFirst.isChecked():
-                    attribute_select = "First"
-                elif self.dlg.radioButtonLast.isChecked():
-                    attribute_select = "Last"
+    def process_gpx_files(self):
+        if self.gpx_files is not None and len(self.gpx_files) > 0:
 
-                for gpx_file in self.gpx_files:
-                    self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select, use_wgs84,
-                                                         calculate_speed, overwrite)
-                    self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
+            progress_message_bar = self.iface.messageBar().createMessage("Create gpx segments ...")
+            progress = QProgressBar()
+            progress.setMaximum(len(self.gpx_files))
+            # progress.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            progress_message_bar.layout().addWidget(progress)
+            self.iface.messageBar().pushWidget(progress_message_bar, self.iface.messageBar().INFO)
+
+            overwrite = False
+            use_wgs84 = True if self.dlg.chkUseWgs84.isChecked() else False
+            calculate_speed = True if self.dlg.chkCalculateSpeed.isChecked() else False
+            attribute_select = "Both"
+            if self.dlg.radioButtonFirst.isChecked():
+                attribute_select = "First"
+            elif self.dlg.radioButtonLast.isChecked():
+                attribute_select = "Last"
+
+            i = 0
+            for gpx_file in self.gpx_files:
+                self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select, use_wgs84,
+                                                     calculate_speed, overwrite)
+                self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
+                if self.gpx_file_reader.error_message != '':
+                    self.iface.messageBar().pushMessage("Error", self.gpx_file_reader.error_message,
+                                                        level=QgsMessageBar.CRITICAL)
+
+                i += 1
+                progress.setValue(i)
+            self.iface.messageBar().clearWidgets()
 
     def initialize(self):
         self.gpx_files = list()
@@ -319,7 +332,7 @@ class GpxSegmentImporter:
         # set column width to fit contents
         table_view.resizeColumnsToContents()
         # set row height
-        for row in xrange(len(self.gpx_file_reader.attribute_definitions)):
+        for row in range(len(self.gpx_file_reader.attribute_definitions)):
             table_view.setRowHeight(row, 20)
         # disable sorting
         table_view.setSortingEnabled(False)
