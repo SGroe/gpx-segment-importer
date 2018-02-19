@@ -37,7 +37,7 @@ class GpxFileReader:
                 track_point = track_segment.find('gpx:trkpt', self.namespace)
                 if track_point is not None:
                     for child in track_point:
-                        self._detect_attribute(child)
+                        self.detect_attribute(child)
                 else:
                     self.error_message = 'Cannot find trkpt-tag in GPX file'
             else:
@@ -50,6 +50,9 @@ class GpxFileReader:
     def import_gpx_file(self, file_path, output_directory, attribute_select="Last", use_wgs84=True,
                         calculate_speed=False, overwrite=False):
         """ Imports the data from the GPX file and create the vector layer """
+
+        if len(self.attribute_definitions) == 0:
+            self.get_table_data(file_path)
 
         self.error_message = ''
 
@@ -106,7 +109,9 @@ class GpxFileReader:
             self.error_message = vector_layer_builder.error_message
             print(self.error_message)
 
-    def _detect_attribute(self, element):
+        return vector_layer_builder.vector_layer
+
+    def detect_attribute(self, element):
         """ Either detects the attribute or recursively finds child elements """
 
         if len(element) == 0:  # only elements without children
@@ -123,7 +128,7 @@ class GpxFileReader:
                     element.text is not None and element.text != '',
                     element.text))
         for child in element:
-            self._detect_attribute(child)
+            self.detect_attribute(child)
 
     def add_attributes(self, attributes, element, key_prefix):
         """ Reads and adds attributes to the feature """

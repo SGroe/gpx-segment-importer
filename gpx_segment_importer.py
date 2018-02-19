@@ -27,11 +27,12 @@ from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5 import QtWidgets
 # QGIS imports
-from qgis.gui import QgsMessageBar
+from qgis.core import Qgis, QgsApplication
 # Plugin classes
 from .gpx_file_reader import GpxFileReader
 from .attribute_table_model import AttributeTableModel
 from .datatype_combo_delegate import DatatypeComboDelegate
+from .gpx_segment_importer_provider import GpxSegmentImporterProvider
 # dialog
 from .gpx_segment_importer_dialog import GpxSegmentImporterDialog
 # other
@@ -55,17 +56,14 @@ class GpxSegmentImporter:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
         # initialize locale
-        locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
-            'GpxSegmentImporter_{}.qm'.format(locale))
+            'GpxSegmentImporter_{}.qm'.format(QSettings().value('locale/userLocale')[0:2]))
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
-
-            # if PyQt5.PYQT_VERSION_STR > '4.3.3':
             QCoreApplication.installTranslator(self.translator)
 
         # Declare instance attributes
@@ -86,6 +84,9 @@ class GpxSegmentImporter:
         self.output_directory_default = QSettings().value('gpx-segment-importer/default_output_dir', '')
         self.gpx_file_reader = GpxFileReader()
 
+        # process
+        self.provider = GpxSegmentImporterProvider()
+
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -101,17 +102,8 @@ class GpxSegmentImporter:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('GpxSegmentImporter', message)
 
-    def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+    def add_action(self, icon_path, text, callback, enabled_flag=True, add_to_menu=True, add_to_toolbar=True,
+                   status_tip=None, whats_this=None, parent=None):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -187,6 +179,8 @@ class GpxSegmentImporter:
             callback=self.run,
             parent=self.iface.mainWindow())
 
+        QgsApplication.processingRegistry().addProvider(self.provider)
+
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -196,6 +190,9 @@ class GpxSegmentImporter:
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
+
+        # remove process
+        QgsApplication.processingRegistry().removeProvider(self.provider)
 
     def select_gpx_files(self):
         # Get GPX files
@@ -267,9 +264,8 @@ class GpxSegmentImporter:
             progress_message_bar = self.iface.messageBar().createMessage("Create gpx segments...")
             progress = QtWidgets.QProgressBar()
             progress.setMaximum(len(self.gpx_files))
-            # progress.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
             progress_message_bar.layout().addWidget(progress)
-            self.iface.messageBar().pushWidget(progress_message_bar, self.iface.messageBar().INFO)
+            self.iface.messageBar().pushWidget(progress_message_bar, Qgis.Info)
 
             overwrite = False
             use_wgs84 = True if self.dlg.chkUseWgs84.isChecked() else False
@@ -287,7 +283,7 @@ class GpxSegmentImporter:
                 self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
                 if self.gpx_file_reader.error_message != '':
                     self.iface.messageBar().pushMessage("Error", self.gpx_file_reader.error_message,
-                                                        level=QgsMessageBar.CRITICAL)
+                                                        level=Qgis.CRITICAL)
 
                 i += 1
                 progress.setValue(i)

@@ -15,13 +15,13 @@ class AttributeTableModel(QAbstractTableModel):
         self._array_data = data_in
         self._header_data = header_data
 
-    def rowCount(self, parent=None):
+    def rowCount(self, parent=None, *args):
         return len(self._array_data)
 
-    def columnCount(self, parent=None):
+    def columnCount(self, parent=None, *args):
         return 4
 
-    def headerData(self, column, orientation, role):
+    def headerData(self, column, orientation, role=None):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self._header_data[column]
         # return ""
