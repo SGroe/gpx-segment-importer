@@ -48,7 +48,7 @@ class GpxFileReader:
         return True if self.error_message == '' else False
 
     def import_gpx_file(self, file_path, output_directory, attribute_select="Last", use_wgs84=True,
-                        calculate_speed=False, overwrite=False):
+                        calculate_motion_attributes=False, overwrite=False):
         """ Imports the data from the GPX file and create the vector layer """
 
         if len(self.attribute_definitions) == 0:
@@ -56,7 +56,7 @@ class GpxFileReader:
 
         self.error_message = ''
 
-        if calculate_speed:
+        if calculate_motion_attributes:
             self.attribute_definitions.append(DataTypeDefinition('_distance', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_duration', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
@@ -90,7 +90,7 @@ class GpxFileReader:
                         self.add_attributes(attributes, prev_track_point, 'a_')
                         self.add_attributes(attributes, track_point, 'b_')
 
-                    if calculate_speed:
+                    if calculate_motion_attributes:
                         time_a = DataTypes.create_date(prev_track_point.find('gpx:time', self.namespace).text)
                         time_b = DataTypes.create_date(track_point.find('gpx:time', self.namespace).text)
 

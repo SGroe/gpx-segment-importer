@@ -101,7 +101,7 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
                                                      0, 'gpx',
                                                      None, False))  # [ParameterVector.VECTOR_TYPE_ANY], False))
         self.addParameter(QgsProcessingParameterEnum(self.ATTRIBUTE_MODE,
-                                                     self.tr('Add attributes from which track points'),
+                                                     self.tr('Add attributes from which segment track point(s)'),
                                                      options=self.attribute_mode_options,
                                                      allowMultiple=False, defaultValue=2, optional=False))
         self.addParameter(QgsProcessingParameterBoolean(self.CALCULATE_MOTION_ATTRIBUTES,
@@ -121,12 +121,12 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
         pass
         source = self.parameterAsFile(parameters, self.INPUT, context)
         attribute_mode = self.attribute_mode_options[self.parameterAsInt(parameters, self.ATTRIBUTE_MODE, context)]
-        calc_motion_attributes = self.parameterAsBool(parameters, self.CALCULATE_MOTION_ATTRIBUTES, context)
+        calculate_motion_attributes = self.parameterAsBool(parameters, self.CALCULATE_MOTION_ATTRIBUTES, context)
         use_epsg4326 = self.parameterAsBool(parameters, self.USE_EPSG_4326, context)
 
         feedback.setProgress(0)
         layer = self.gpx_file_reader.import_gpx_file(source, None, attribute_mode, use_epsg4326,
-                                             calc_motion_attributes, False)
+                                                     calculate_motion_attributes, False)
         feedback.setProgress(100)
         if self.gpx_file_reader.error_message != '':
             self.iface.messageBar().pushMessage("Error", self.gpx_file_reader.error_message,

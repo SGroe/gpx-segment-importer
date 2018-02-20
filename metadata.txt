@@ -20,8 +20,9 @@ about=This plugin imports an GPX file and creates short line segments between th
     * To gain full control over the data, you can edit the attribute table before creating the segment layer. The user can select the attributes that should be included in the layer, modify the attribute label and change the data type (integer, double, boolean or string) if the automatic type detection failed, e.g. at numeric data that contains “Null” or “None” values.
     * The plugin detects attributes that do not have a value and deselects it. Values can still be selected manually.
     * Optionally use an alternative coordinate reference system (default is EPSG:4326).
-    * Optionally calculate distance, speed and duration between track points.
+    * Optionally calculate motion attributes (distance, speed and duration) between track points.
     * Create a temporary memory layer or write the layer to a GeoPackage.
+    * Update v2.1: Importer additionally available as QGIS algorithm for usage in processing
 
 tracker=https://github.com/SGroe/gpx-segment-importer/issues
 repository=https://github.com/SGroe/gpx-segment-importer
@@ -30,7 +31,7 @@ repository=https://github.com/SGroe/gpx-segment-importer
 # Recommended items:
 
 # Uncomment the following line and add your changelog:
-changelog=2.1 (future)
+changelog=2.1 (2018-02-20)
     - Importer added as QgisAlgorithm to enable usage in processing
     - QGIS3 API adjustments related to QMessageBar
     2.0 -qgis3 (2018-02-01)
@@ -52,7 +53,7 @@ changelog=2.1 (future)
     - Initial release
 
 # Tags are comma separated with spaces allowed
-tags=gpx,gps,segments,importer
+tags=gpx,gps,segment,importer
 
 homepage=https://github.com/SGroe/gpx-segment-importer
 category=Vector

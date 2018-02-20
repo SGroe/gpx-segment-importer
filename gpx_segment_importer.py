@@ -232,12 +232,12 @@ class GpxSegmentImporter:
                     self.dlg.lblFeedback.setText('Output file(s) already exist!')
             else:
                 self.output_directory = None
-                self.dlg.txtOutputDirectory.setText('[Insert as memory layer]')
+                self.dlg.txtOutputDirectory.setText('[Create temporary layer]')
                 self.dlg.btnOutputDirectory.setText('Output directory')
                 self.dlg.lblFeedback.setText('')
         else:
             self.output_directory = None
-            self.dlg.txtOutputDirectory.setText('[Insert as memory layer]')
+            self.dlg.txtOutputDirectory.setText('[Create temporary layer]')
             self.dlg.btnOutputDirectory.setText('Output directory')
 
     @staticmethod
@@ -269,7 +269,7 @@ class GpxSegmentImporter:
 
             overwrite = False
             use_wgs84 = True if self.dlg.chkUseWgs84.isChecked() else False
-            calculate_speed = True if self.dlg.chkCalculateSpeed.isChecked() else False
+            calculate_motion_attributes = True if self.dlg.chkCalculateMotionAttributes.isChecked() else False
             attribute_select = "Both"
             if self.dlg.radioButtonFirst.isChecked():
                 attribute_select = "First"
@@ -279,7 +279,7 @@ class GpxSegmentImporter:
             i = 0
             for gpx_file in self.gpx_files:
                 self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select, use_wgs84,
-                                                     calculate_speed, overwrite)
+                                                     calculate_motion_attributes, overwrite)
                 self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
                 if self.gpx_file_reader.error_message != '':
                     self.iface.messageBar().pushMessage("Error", self.gpx_file_reader.error_message,
@@ -297,7 +297,7 @@ class GpxSegmentImporter:
         self.dlg.txtSelectedFiles.clear()
         self.dlg.btnOutputDirectory.setText('Output directory')
         self.dlg.txtOutputDirectory.clear()
-        self.dlg.txtOutputDirectory.setText('[Insert as memory layer]')
+        self.dlg.txtOutputDirectory.setText('[Create temporary layer]')
         self.dlg.lblFeedback.setText('')
 
     def create_table(self):
