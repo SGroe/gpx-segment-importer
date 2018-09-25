@@ -1,36 +1,3 @@
-# -*- coding: utf-8 -*-
-
-"""
-/***************************************************************************
- a
-                                 A QGIS plugin
- a
-                              -------------------
-        begin                : 2018-01-10
-        copyright            : (C) 2018 by a
-        email                : a
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-"""
-
-__author__ = 'a'
-__date__ = '2018-01-10'
-__copyright__ = '(C) 2018 by a'
-
-# This will get replaced with a git SHA1 when you do a git archive
-
-__revision__ = '$Format:%H$'
-
-# pyqt5 imports
-# from PyQt5.QtCore import QSettings
 # qgis imports
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 # from qgis.PyQt.QtCore import QCoreApplication

@@ -191,7 +191,7 @@ class GpxSegmentImporter:
         # remove the toolbar
         del self.toolbar
 
-        # remove process
+        # remove provider
         QgsApplication.processingRegistry().removeProvider(self.provider)
 
     def select_gpx_files(self):

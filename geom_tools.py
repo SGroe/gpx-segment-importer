@@ -12,10 +12,13 @@ class GeomTools:
 
     @staticmethod
     def calculate_speed(time_a, time_b, point_a, point_b):
-        distance = GeomTools.distance(point_a, point_b) / 1000
+        distance = GeomTools.distance(point_a, point_b)
 
-        time_diff_h = (time_b - time_a).total_seconds() / 3600
-        return float(distance / time_diff_h)
+        time_diff_h = (time_b - time_a).total_seconds()
+        if time_diff_h > 0:
+            return float((distance / 1000) / (time_diff_h / 3600))
+        else:
+            return 0
 
     @staticmethod
     def calculate_duration(time_a, time_b):

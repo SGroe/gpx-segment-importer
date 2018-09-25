@@ -44,9 +44,6 @@ class GpxSegmentImporterProvider(QgsProcessingProvider):
     def __init__(self):
         super().__init__()
 
-        # Load algorithms
-        self.algs = [GpxSegmentImporterAlgorithm()]
-
     def id(self):
         return "GpxSegmentImporter"
 
@@ -78,9 +75,7 @@ class GpxSegmentImporterProvider(QgsProcessingProvider):
     #     #                                     'Example setting', 'Default value'))
 
     def load(self):
-        """In this method we add settings needed to configure our
-        provider.
-        """
+        """In this method we add settings needed to configure our provider. """
         # ProcessingConfig.settingIcons[self.name()] = self.icon()
         # # Deactivate provider by default
         # ProcessingConfig.addSetting(Setting(self.name(), 'ACTIVATE_EXAMPLE',
@@ -100,18 +95,11 @@ class GpxSegmentImporterProvider(QgsProcessingProvider):
         # ProcessingConfig.removeSetting(GpxSegmentImporterProvider.MY_DUMMY_SETTING)
 
     def loadAlgorithms(self):
-        """Here we fill the list of algorithms in self.algs.
-
-        This method is called whenever the list of algorithms should
+        """This method is called whenever the list of algorithms should
         be updated. If the list of algorithms can change (for instance,
         if it contains algorithms from user-defined scripts and a new
         script might have been added), you should create the list again
         here.
-
-        In this case, since the list is always the same, we assign from
-        the pre-made list. This assignment has to be done in this method
-        even if the list does not change, since the self.algs list is
-        cleared before calling this method.
         """
-        for alg in self.algs:
-            self.addAlgorithm(alg)
+        # https://github.com/jdugge/BufferByPercentage/pull/14
+        self.addAlgorithm(GpxSegmentImporterAlgorithm())

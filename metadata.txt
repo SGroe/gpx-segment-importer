@@ -30,7 +30,6 @@ repository=https://github.com/SGroe/gpx-segment-importer
 
 # Recommended items:
 
-# Uncomment the following line and add your changelog:
 changelog=2.1 (2018-02-20)
     - Importer added as QgisAlgorithm to enable usage in processing
     - QGIS3 API adjustments related to QMessageBar
