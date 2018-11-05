@@ -1,8 +1,8 @@
 # Initialize Qt resources from file resources.py
 from xml.etree import ElementTree
-from qgis.core import QgsVectorLayer, QgsField, QgsGeometry, QgsFeature, QgsPointXY, QgsVectorLayer,\
-    QgsCoordinateReferenceSystem
-from .datatype_definition import DataTypeDefinition, DataTypes
+from qgis.core import (QgsVectorLayer, QgsField, QgsGeometry, QgsFeature, QgsPointXY, QgsVectorLayer,
+                       QgsCoordinateReferenceSystem)
+from .datatype_definition import (DataTypeDefinition, DataTypes)
 from .gpx_feature_builder import GpxFeatureBuilder
 from .geom_tools import GeomTools
 import os
@@ -15,6 +15,7 @@ class GpxFileReader:
         self.attribute_definitions = list()
         self.namespace = None
         self.error_message = ''
+        self.equal_coordintes = 0
 
     def get_table_data(self, file_path):
         """ Reads the first GPX track point and create datatype definitions from the available attributes """
@@ -64,10 +65,13 @@ class GpxFileReader:
         tree = ElementTree.parse(file_path)
         root = tree.getroot()
 
+        crs = QgsCoordinateReferenceSystem('EPSG:4326') if use_wgs84 else None
+
         vector_layer_builder = GpxFeatureBuilder(os.path.basename(file_path), self.attribute_definitions,
-                                                 attribute_select, use_wgs84)
+                                                 attribute_select, crs)
 
         prev_track_point = None
+        self.equal_coordintes = 0
 
         for track in root.findall('gpx:trk', self.namespace):
             track_segment = track.find('gpx:trkseg', self.namespace)
@@ -77,7 +81,8 @@ class GpxFileReader:
                     previous_point = QgsPointXY(float(prev_track_point.get('lon')), float(prev_track_point.get('lat')))
                     new_point = QgsPointXY(float(track_point.get('lon')), float(track_point.get('lat')))
 
-                    if self.is_equal_coordinate(previous_point, new_point):
+                    if GeomTools.is_equal_coordinate(previous_point, new_point):
+                        self.equal_coordintes += 1
                         continue
 
                     # add a feature with first/last/both attributes
@@ -94,11 +99,12 @@ class GpxFileReader:
                         time_a = DataTypes.create_date(prev_track_point.find('gpx:time', self.namespace).text)
                         time_b = DataTypes.create_date(track_point.find('gpx:time', self.namespace).text)
 
-                        attributes['_distance'] = GeomTools.distance(previous_point, new_point)
+                        attributes['_distance'] = GeomTools.distance(previous_point, new_point, crs)
 
                         if time_a is not None or time_b is not None:
                             attributes['_duration'] = GeomTools.calculate_duration(time_a, time_b)
-                            attributes['_speed'] = GeomTools.calculate_speed(time_a, time_b, previous_point, new_point)
+                            attributes['_speed'] = GeomTools.calculate_speed(time_a, time_b, previous_point, new_point,
+                                                                             crs)
 
                     vector_layer_builder.add_feature([previous_point, new_point], attributes)
 
@@ -147,11 +153,12 @@ class GpxFileReader:
                         return
                     attribute.example_value = element.text
 
-                if attribute.datatype is DataTypes.Integer and DataTypes.str_is_int(attribute.example_value) or \
-                        attribute.datatype is DataTypes.Double and DataTypes.str_is_double(attribute.example_value) or \
+                if attribute.datatype is DataTypes.Integer and DataTypes.value_is_int(attribute.example_value) or \
+                        attribute.datatype is DataTypes.Double and \
+                        DataTypes.value_is_double(attribute.example_value) or \
                         attribute.datatype is DataTypes.String:
                     attributes[key_prefix + attribute.attribute_key_modified] = attribute.example_value
-                elif attribute.datatype is DataTypes.Boolean and DataTypes.str_is_boolean(attribute.example_value):
+                elif attribute.datatype is DataTypes.Boolean and DataTypes.value_is_boolean(attribute.example_value):
                     attributes[key_prefix + attribute.attribute_key_modified] = str(attribute.example_value)
             except KeyError:
                 pass
@@ -164,10 +171,6 @@ class GpxFileReader:
             if key == attribute.attribute_key:
                 return attribute
         return None
-
-    @staticmethod
-    def is_equal_coordinate(previous_point, new_point):
-        return previous_point.x() == new_point.x() and previous_point.y() == new_point.y()
 
     @staticmethod
     def normalize(name):

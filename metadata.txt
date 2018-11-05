@@ -10,7 +10,7 @@
 name=GPX Segment Importer
 qgisMinimumVersion=3.0
 description=This plugin imports an GPX file and creates short line segments between the track points
-version=2.1
+version=2.2
 author=Simon Gröchenig @ Salzburg Research
 email=simon.groechenig@salzburgresearch.at
 
@@ -23,6 +23,7 @@ about=This plugin imports an GPX file and creates short line segments between th
     * Optionally calculate motion attributes (distance, speed and duration) between track points.
     * Create a temporary memory layer or write the layer to a GeoPackage.
     * Update v2.1: Importer additionally available as QGIS algorithm for usage in processing
+    * Update v2.2: Add new algorithm 'Track segment creator': Use any point vector dataset which has a timestamp attribute to create line segments
 
 tracker=https://github.com/SGroe/gpx-segment-importer/issues
 repository=https://github.com/SGroe/gpx-segment-importer
@@ -30,7 +31,9 @@ repository=https://github.com/SGroe/gpx-segment-importer
 
 # Recommended items:
 
-changelog=2.1 (2018-02-20)
+changelog=2.2 (release date)
+    - Add new algorithm 'Track segment creator'
+    2.1 (2018-02-20)
     - Importer added as QgisAlgorithm to enable usage in processing
     - QGIS3 API adjustments related to QMessageBar
     2.0 -qgis3 (2018-02-01)

@@ -35,6 +35,7 @@ from qgis.core import QgsProcessingProvider
 # from processing.core.ProcessingConfig import Setting, ProcessingConfig
 # plugin imports
 from .gpx_segment_importer_algorithm import GpxSegmentImporterAlgorithm
+from .track_segment_creator_algorithm import TrackSegmentCreatorAlgorithm
 
 
 class GpxSegmentImporterProvider(QgsProcessingProvider):
@@ -103,3 +104,4 @@ class GpxSegmentImporterProvider(QgsProcessingProvider):
         """
         # https://github.com/jdugge/BufferByPercentage/pull/14
         self.addAlgorithm(GpxSegmentImporterAlgorithm())
+        self.addAlgorithm(TrackSegmentCreatorAlgorithm())

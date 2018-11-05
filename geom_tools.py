@@ -1,20 +1,21 @@
-from qgis.core import QgsDistanceArea
+from qgis.core import QgsProject, QgsDistanceArea
 import math
-
+import datetime
 
 class GeomTools:
     def __init__(self):
         pass
 
-    wgs84_a = 6378137.000
-    wgs84_b = 6356752.314
-    wgs84_f = (wgs84_a - wgs84_b) / wgs84_a
+    @staticmethod
+    def is_equal_coordinate(point_a, point_b):
+        return point_a.x() == point_b.x() and point_a.y() == point_b.y()
 
     @staticmethod
-    def calculate_speed(time_a, time_b, point_a, point_b):
-        distance = GeomTools.distance(point_a, point_b)
+    def calculate_speed(time_a, time_b, point_a, point_b, crs):
+        distance = GeomTools.distance(point_a, point_b, crs)
 
-        time_diff_h = (time_b - time_a).total_seconds()
+        # time_diff_h = (time_b - time_a).total_seconds()
+        time_diff_h = GeomTools.calculate_duration(time_a, time_b)
         if time_diff_h > 0:
             return float((distance / 1000) / (time_diff_h / 3600))
         else:
@@ -22,16 +23,24 @@ class GeomTools:
 
     @staticmethod
     def calculate_duration(time_a, time_b):
-        duration = (time_b - time_a).total_seconds()
+        if type(time_a) is datetime.datetime:  # TODO only use one type of date
+            duration = (time_b - time_a).total_seconds()
+        else:
+            duration = time_a.msecsTo(time_b) / 1000
         if float(duration):
             return duration
         return None
 
     @staticmethod
-    def distance(start, end):
+    def distance(start, end, crs):
         distance = QgsDistanceArea()
         # distance.setEllipsoidalMode(True)
-        distance.setEllipsoid('WGS84')
+        if crs is not None:
+            distance.setSourceCrs(crs, QgsProject.instance().transformContext())
+            if distance.sourceCrs().isGeographic():
+                distance.setEllipsoid(distance.sourceCrs().ellipsoidAcronym())
+        else:
+            distance.setEllipsoid('WGS84')
         return distance.measureLine(start, end)
 
     @staticmethod
@@ -43,6 +52,10 @@ class GeomTools:
         :param end: end coordinate
         :return:
         """
+
+        wgs84_a = 6378137.000
+        wgs84_b = 6356752.314
+        wgs84_f = (wgs84_a - wgs84_b) / wgs84_a
 
         lambda_a = math.radians(start.x())
         phi_a = math.radians(start.y())
@@ -70,15 +83,15 @@ class GeomTools:
 
         r = math.sqrt(s * c) / w
 
-        d = 2 * w * GeomTools.wgs84_a
+        d = 2 * w * wgs84_a
 
         h1 = (3 * r - 1) / (2 * c)
         h2 = (3 * r + 1) / (2 * s)
 
-        d = d * (1 + GeomTools.wgs84_f * h1 * squ_sin_f * squ_cos_g - GeomTools.wgs84_f * h2 * squ_cos_f * squ_sin_g)
+        d = d * (1 + wgs84_f * h1 * squ_sin_f * squ_cos_g - wgs84_f * h2 * squ_cos_f * squ_sin_g)
 
         if float(d):
             return d
         else:
-            print ("distance between track points result is not a number")
+            print("distance between track points result is not a number")
             return 0.0

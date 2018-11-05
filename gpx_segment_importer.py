@@ -281,13 +281,20 @@ class GpxSegmentImporter:
                 self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select, use_wgs84,
                                                      calculate_motion_attributes, overwrite)
                 self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
-                if self.gpx_file_reader.error_message != '':
-                    self.iface.messageBar().pushMessage("Error", self.gpx_file_reader.error_message,
-                                                        level=Qgis.CRITICAL)
 
                 i += 1
                 progress.setValue(i)
-            self.iface.messageBar().clearWidgets()
+                if i == len(self.gpx_files):
+                    self.iface.messageBar().clearWidgets()
+
+                if self.gpx_file_reader.equal_coordintes > 0:
+                    self.iface.messageBar().pushMessage("Error", 'Cannot create ' +
+                                                        str(self.gpx_file_reader.equal_coordintes) +
+                                                        ' segments because of equal coordinates', level=Qgis.Warning)
+
+                if self.gpx_file_reader.error_message != '':
+                    self.iface.messageBar().pushMessage("Error", self.gpx_file_reader.error_message,
+                                                        level=Qgis.CRITICAL)
 
     def initialize(self):
         self.gpx_files = list()

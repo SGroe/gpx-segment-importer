@@ -14,7 +14,7 @@ class DataTypeDefinition:
 
 
 # https://stackoverflow.com/questions/702834/whats-the-common-practice-for-enums-in-python
-class DataTypes():
+class DataTypes:
     # _unused, Integer, Double, Boolean, String, Date = range(6)
     Undefined = None
     Integer = 'Integer'
@@ -39,11 +39,11 @@ class DataTypes():
 
     @staticmethod
     def detect_data_type(text):
-        if DataTypes.str_is_int(text):
+        if DataTypes.value_is_int(text):
             return DataTypes.Integer
-        elif DataTypes.str_is_double(text):
+        elif DataTypes.value_is_double(text):
             return DataTypes.Double
-        elif DataTypes.str_is_boolean(text):
+        elif DataTypes.value_is_boolean(text):
             return DataTypes.Boolean
         # elif self.str_is_date(extension.text):
         #     return DataTypes.Date
@@ -51,44 +51,64 @@ class DataTypes():
             return DataTypes.String
 
     @staticmethod
-    def str_is_int(string):
-        if string is None:
-            return False
-        try:
-            int(string)
+    def value_is_int(value):
+        if type(value) is str:
+            if value is None:
+                return False
+            try:
+                int(value)
+                return True
+            except ValueError:
+                return False
+            # except TypeError:
+            #     print "TypeError int " + str(string)
+            #     return False
+        elif type(value) is int:
             return True
-        except ValueError:
-            return False
-        # except TypeError:
-        #     print "TypeError int " + str(string)
-        #     return False
-
-    @staticmethod
-    def str_is_boolean(string):
-        if string is None:
-            return False
-        if string in ['true', 'false', 'TRUE', 'FALSE', 1, 0, 't', 'f']:
-            return True
-        return False
-
-    @staticmethod
-    def str_is_double(string):
-        if string is None:
-            return False
-        try:
-            float(string)
-            return True
-        except ValueError:
-            return False
-        except TypeError:
-            print("TypeError double " + str(string))
+        else:
             return False
 
     @staticmethod
-    def str_is_date(string):
-        if string is None:
-            return None
-        elif DataTypes.create_date(string) is not None:
+    def value_is_boolean(value):
+        if type(value) is str:
+            if value is None:
+                return False
+            if value in ['true', 'false', 'TRUE', 'FALSE', 1, 0, 't', 'f']:
+                return True
+            return False
+        elif type(value) is bool:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def value_is_double(value):
+        if type(value) is str:
+            if value is None:
+                return False
+            try:
+                float(value)
+                return True
+            except ValueError:
+                return False
+            except TypeError:
+                print("TypeError double " + str(value))
+                return False
+        elif type(value) is float:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def value_is_date(value):
+        if type(value) is str:
+            if value is None:
+                return None
+            elif DataTypes.create_date(value) is not None:
+                return True
+            else:
+                return False
+        elif type(value) is datetime:
             return True
         else:
             return False
@@ -100,21 +120,30 @@ class DataTypes():
         return False
 
     @staticmethod
-    def create_date(s):
+    def create_date(s, custom_format=None):
         if s is None:
             return None
+        # TODO explain following line
         s = re.sub(r"[+-]([0-9]{4})+", "", s)
+
+        # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
         try:
-            return datetime.strptime(s, '%Y-%m-%dT%H:%M:%SZ')
+            if custom_format is not None:
+                return datetime.strptime(s, custom_format)
+            else:
+                raise ValueError('')
         except ValueError:
             try:
-                return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
+                return datetime.strptime(s, '%Y-%m-%dT%H:%M:%SZ')
             except ValueError:
                 try:
-                    return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S')
+                    return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
                 except ValueError:
                     try:
-                        return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%f')
+                        return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S')
                     except ValueError:
-                        pass
+                        try:
+                            return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%f')
+                        except ValueError:
+                            pass
         return None
