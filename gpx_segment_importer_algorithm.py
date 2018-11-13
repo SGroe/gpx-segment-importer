@@ -35,7 +35,7 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
         self.INPUT = 'INPUT'
         self.ATTRIBUTE_MODE = 'ATTRIBUTE_MODE'
         self.CALCULATE_MOTION_ATTRIBUTES = 'CALCULATE_MOTION_ATTRIBUTES'
-        self.USE_EPSG_4326 = 'USE_EPSG_4326'
+        # self.USE_EPSG_4326 = 'USE_EPSG_4326'
         self.OUTPUT = 'OUTPUT'
 
         self.attribute_mode_options = ['Both', 'First', 'Last']
@@ -51,9 +51,9 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
     def group(self):
         return self.alg_group
 
-    def tr(self, text):
-        # return self.tr("gpxsegmentimporter", text)
-        return text
+    # def tr(self, text, context):
+    #     # return self.tr("gpxsegmentimporter", text)
+    #     return super(text, context)
 
     def initAlgorithm(self, config=None):
         """Here we define the inputs and output of the algorithm, along
@@ -78,9 +78,9 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
                                                             'Calculate distance, speed and duration between ' +
                                                             'track points'),
                                                         defaultValue=True, optional=True))
-        self.addParameter(QgsProcessingParameterBoolean(self.USE_EPSG_4326,
-                                                        self.tr('Use \'EPSG:4326\' coordinate reference system'),
-                                                        True, True))
+        # self.addParameter(QgsProcessingParameterBoolean(self.USE_EPSG_4326,
+        #                                                 self.tr('Use \'EPSG:4326\' coordinate reference system'),
+        #                                                 True, True))
 
         # We add a vector layer as output
         self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr('Output'),
@@ -91,7 +91,7 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
         source = self.parameterAsFile(parameters, self.INPUT, context)
         attribute_mode = self.attribute_mode_options[self.parameterAsInt(parameters, self.ATTRIBUTE_MODE, context)]
         calculate_motion_attributes = self.parameterAsBool(parameters, self.CALCULATE_MOTION_ATTRIBUTES, context)
-        use_epsg4326 = self.parameterAsBool(parameters, self.USE_EPSG_4326, context)
+        use_epsg4326 = True  # self.parameterAsBool(parameters, self.USE_EPSG_4326, context)
 
         feedback.setProgress(0)
         layer = self.gpx_file_reader.import_gpx_file(source, None, attribute_mode, use_epsg4326,

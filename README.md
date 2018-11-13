@@ -15,10 +15,10 @@ The native GPS eXchange Format (GPX) file importer for the open-source geo-infor
 * Read all attributes available from each track point at the segment start and/or end. This includes the timestamp and the elevation as well as any other attributes added to a track point.
 * To gain full control over the data, you can edit the attribute table before creating the segment layer. The user can select the attributes that should be included in the layer, modify the attribute label and change the data type (integer, double, boolean or string) if the automatic type detection failed, e.g. at numeric data that contains “Null” or “None” values.
 * The plugin detects attributes that do not have a value and deselects it. Values can still be selected manually.
-* Optionally use an alternative coordinate reference system (default is EPSG:4326).
 * Optionally calculate motion attributes (distance, speed and duration) between track points.
 * Create a temporary memory layer or write the layer to a GeoPackage
 * [Update v2.1] Importer additionally available as QGIS algorithm for usage in processing
+* [Update v2.2] Add new algorithm 'Track segment creator': Use any point vector dataset that has a timestamp attribute to create line segments
 
 ## Use of plugin
 

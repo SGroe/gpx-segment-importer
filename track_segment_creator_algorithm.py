@@ -34,7 +34,7 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
 
         self.INPUT = 'INPUT'
         self.TIMESTAMP_FIELD = 'TIMESTAMP_FIELD'
-        self.TIMESTAMP_FORMAT = 'TIMESTAMP_FORMAT'
+        # self.TIMESTAMP_FORMAT = 'TIMESTAMP_FORMAT'
         self.ATTRIBUTE_MODE = 'ATTRIBUTE_MODE'
         self.CALCULATE_MOTION_ATTRIBUTES = 'CALCULATE_MOTION_ATTRIBUTES'
         # self.USE_EPSG_4326 = 'USE_EPSG_4326'
@@ -72,15 +72,15 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         self.addParameter(QgsProcessingParameterField(self.TIMESTAMP_FIELD,
                                                       self.tr('Timestamp field'),
                                                       parentLayerParameterName=self.INPUT,
-                                                      type=QgsProcessingParameterField.Any))
-        #                                               type=QgsProcessingParameterField.DateTime))
+                                                      # type=QgsProcessingParameterField.Any))
+                                                      type=QgsProcessingParameterField.DateTime))
         # self.addParameter(QgsProcessingParameterString(self.TIMESTAMP_FIELD,
         #                                                self.tr('Timestamp field'),
         #                                                None, False, False))
-        self.addParameter(QgsProcessingParameterString(self.TIMESTAMP_FORMAT,
-                                                       self.tr('Timestamp format (applies only if \'Timestamp field\''
-                                                               ' is of type string)'),
-                                                       '%Y-%m-%dT%H:%M:%S', False, True))
+        # self.addParameter(QgsProcessingParameterString(self.TIMESTAMP_FORMAT,
+        #                                                self.tr('Timestamp format (applies only if \'Timestamp field\''
+        #                                                        ' is of type string)'),
+        #                                                '%Y-%m-%dT%H:%M:%S', False, True))
         self.addParameter(QgsProcessingParameterEnum(self.ATTRIBUTE_MODE,
                                                      self.tr('Add attributes from which segment track point(s)'),
                                                      options=self.attribute_mode_options,
@@ -104,13 +104,13 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         # if source is None:  # https://github.com/qgis/QGIS/blob/master/python/plugins/processing/algs/qgis/PointsLayerFromTable.py
         #     raise QgsProcessingException(self.invalidSourceError(parameters, self.INPUT))
         timestamp_field = self.parameterAsString(parameters, self.TIMESTAMP_FIELD, context)
-        timestamp_format = self.parameterAsString(parameters, self.TIMESTAMP_FORMAT, context)
+        # timestamp_format = self.parameterAsString(parameters, self.TIMESTAMP_FORMAT, context)
         attribute_mode = self.attribute_mode_options[self.parameterAsInt(parameters, self.ATTRIBUTE_MODE, context)]
         calculate_motion_attributes = self.parameterAsBool(parameters, self.CALCULATE_MOTION_ATTRIBUTES, context)
         # use_epsg4326 = self.parameterAsBool(parameters, self.USE_EPSG_4326, context)
 
         feedback.setProgress(0)
-        layer = self.point_layer_reader.import_gpx_file(source, timestamp_field, timestamp_format, attribute_mode,
+        layer = self.point_layer_reader.import_gpx_file(source, timestamp_field, "", attribute_mode,
                                                         calculate_motion_attributes)
         feedback.setProgress(100)
         if self.point_layer_reader.error_message != '':

@@ -12,12 +12,11 @@ class GpxFeatureBuilder:
     def __init__(self, layer_name, attribute_definitions, attribute_select='Last', crs=None):
         self.error_message = ''
 
-        # layer_definition = 'LineString?crs=epsg:4326' if use_wgs84 else 'LineString'
         layer_definition = 'LineString'
-        self.vector_layer = QgsVectorLayer(layer_definition, layer_name, "memory")
         if crs is not None:
-            self.vector_layer.setCrs(crs)
-            # print('Set CRS: ' + str(crs.postgisSrid()))
+            layer_definition = layer_definition + "?crs=epsg:" + str(crs.postgisSrid())
+
+        self.vector_layer = QgsVectorLayer(layer_definition, layer_name, "memory")
         self.data_provider = self.vector_layer.dataProvider()
 
         # Enter editing mode
