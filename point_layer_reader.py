@@ -88,12 +88,12 @@ class PointLayerReader:
 
             prev_track_point = track_point
 
-        vector_layer_builder.save_file(None, False)
+        vector_layer = vector_layer_builder.save_layer(None, False)
         if vector_layer_builder.error_message != '':
             self.error_message = vector_layer_builder.error_message
             print(self.error_message)
 
-        return vector_layer_builder.vector_layer
+        return vector_layer
 
     def detect_attributes(self, track_point):
         """ Either detects the attribute or recursively finds child elements """

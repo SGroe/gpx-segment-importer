@@ -27,7 +27,7 @@ from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5 import QtWidgets
 # QGIS imports
-from qgis.core import Qgis, QgsApplication
+from qgis.core import Qgis, QgsProject, QgsApplication
 # Plugin classes
 from .gpx_file_reader import GpxFileReader
 from .attribute_table_model import AttributeTableModel
@@ -278,8 +278,11 @@ class GpxSegmentImporter:
 
             i = 0
             for gpx_file in self.gpx_files:
-                self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select, use_wgs84,
+                layer = self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select, use_wgs84,
                                                      calculate_motion_attributes, overwrite)
+                if layer is not None:
+                    QgsProject.instance().addMapLayer(layer)
+
                 self.dlg.lblFeedback.setText(self.gpx_file_reader.error_message)
 
                 i += 1

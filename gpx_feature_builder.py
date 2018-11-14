@@ -1,6 +1,6 @@
 from PyQt5.QtCore import QVariant
 # Initialize Qt resources from file resources.py
-from qgis.core import QgsProject, QgsVectorLayer, QgsField, QgsFeature, QgsGeometry
+from qgis.core import QgsVectorLayer, QgsField, QgsFeature, QgsGeometry
 from .datatype_definition import DataTypes
 from .vector_file_writer import VectorFileWriter
 import os
@@ -63,7 +63,7 @@ class GpxFeatureBuilder:
                 pass
         self.data_provider.addFeatures([feature])
 
-    def save_file(self, output_directory, overwrite):
+    def save_layer(self, output_directory, overwrite):
         self.vector_layer.commitChanges()
 
         self.error_message = ''
@@ -78,14 +78,12 @@ class GpxFeatureBuilder:
                     output_file_path = vector_layer_writer.write(self.vector_layer, overwrite)
 
                     if output_file_path is not None:
-                        shp_layer = QgsVectorLayer(output_file_path, os.path.basename(output_file_path), 'ogr')
-                        QgsProject.instance().addMapLayer(shp_layer)
+                        return QgsVectorLayer(output_file_path, os.path.basename(output_file_path), 'ogr')
                     else:
                         self.error_message = 'Writing vector layer failed...'
-                        return False
+                        return None
                 else:
                     self.error_message = 'Cannot find output directory'
-                    return False
-            else:
-                QgsProject.instance().addMapLayer(self.vector_layer)
-        return True
+                    return None
+
+        return self.vector_layer

@@ -88,26 +88,34 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
 
     def processAlgorithm(self, parameters, context, feedback):
         pass
-        source = self.parameterAsFile(parameters, self.INPUT, context)
+        input_file = self.parameterAsFile(parameters, self.INPUT, context)
         attribute_mode = self.attribute_mode_options[self.parameterAsInt(parameters, self.ATTRIBUTE_MODE, context)]
         calculate_motion_attributes = self.parameterAsBool(parameters, self.CALCULATE_MOTION_ATTRIBUTES, context)
         use_epsg4326 = True  # self.parameterAsBool(parameters, self.USE_EPSG_4326, context)
 
-        feedback.setProgress(0)
-        layer = self.gpx_file_reader.import_gpx_file(source, None, attribute_mode, use_epsg4326,
+        layer = self.gpx_file_reader.import_gpx_file(input_file, None, attribute_mode, use_epsg4326,
                                                      calculate_motion_attributes, False)
         if self.gpx_file_reader.equal_coordintes > 0:
             feedback.reportError('Cannot create ' + str(self.gpx_file_reader.equal_coordintes) +
                                  ' segments because of equal coordinates')
 
-        feedback.setProgress(100)
         if self.gpx_file_reader.error_message != '':
-            feedback.reportError(self.gpx_file_reader.error_message)
+            feedback.reportError(self.gpx_file_reader.error_message, True)
 
         (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT, context,
                                                layer.fields(), QgsWkbTypes.LineString, layer.sourceCrs())
 
-        for f in layer.getFeatures():
+        total = 100.0 / layer.featureCount() if layer.featureCount() else 0
+
+        for current, f in enumerate(layer.getFeatures()):
+            # Stop the algorithm if cancel button has been clicked
+            if feedback.isCanceled():
+                break
+
+            # Add a feature in the sink
             sink.addFeature(f, QgsFeatureSink.FastInsert)
+
+            # Update the progress bar
+            feedback.setProgress(int(current * total))
 
         return {self.OUTPUT: dest_id}

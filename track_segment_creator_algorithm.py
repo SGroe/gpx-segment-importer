@@ -99,7 +99,6 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
                                                             QgsProcessing.TypeVectorLine))
 
     def processAlgorithm(self, parameters, context, feedback):
-        pass
         source = self.parameterAsSource(parameters, self.INPUT, context)
         # if source is None:  # https://github.com/qgis/QGIS/blob/master/python/plugins/processing/algs/qgis/PointsLayerFromTable.py
         #     raise QgsProcessingException(self.invalidSourceError(parameters, self.INPUT))
@@ -109,18 +108,30 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         calculate_motion_attributes = self.parameterAsBool(parameters, self.CALCULATE_MOTION_ATTRIBUTES, context)
         # use_epsg4326 = self.parameterAsBool(parameters, self.USE_EPSG_4326, context)
 
-        feedback.setProgress(0)
         layer = self.point_layer_reader.import_gpx_file(source, timestamp_field, "", attribute_mode,
                                                         calculate_motion_attributes)
-        feedback.setProgress(100)
+
+        if self.gpx_file_reader.equal_coordintes > 0:
+            feedback.reportError('Cannot create ' + str(self.gpx_file_reader.equal_coordintes) +
+                                 ' segments because of equal coordinates')
+
         if self.point_layer_reader.error_message != '':
-            self.iface.messageBar().pushMessage("Error", self.gpx_file_reader.error_message,
-                                                level=Qgis.CRITICAL)
+            feedback.reportError(self.gpx_file_reader.error_message, True)
 
         (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT, context,
                                                layer.fields(), QgsWkbTypes.LineString, layer.sourceCrs())
 
-        for f in layer.getFeatures():
+        total = 100.0 / layer.featureCount() if layer.featureCount() else 0
+
+        for current, f in enumerate(layer.getFeatures()):
+            # Stop the algorithm if cancel button has been clicked
+            if feedback.isCanceled():
+                break
+
+            # Add a feature in the sink
             sink.addFeature(f, QgsFeatureSink.FastInsert)
+
+            # Update the progress bar
+            feedback.setProgress(int(current * total))
 
         return {self.OUTPUT: dest_id}
