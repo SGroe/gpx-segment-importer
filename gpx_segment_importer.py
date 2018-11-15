@@ -268,7 +268,7 @@ class GpxSegmentImporter:
             self.iface.messageBar().pushWidget(progress_message_bar, Qgis.Info)
 
             overwrite = False
-            use_wgs84 = True if self.dlg.chkUseWgs84.isChecked() else False
+            use_wgs84 = True  # if self.dlg.chkUseWgs84.isChecked() else False
             calculate_motion_attributes = True if self.dlg.chkCalculateMotionAttributes.isChecked() else False
             attribute_select = "Both"
             if self.dlg.radioButtonFirst.isChecked():
@@ -278,8 +278,8 @@ class GpxSegmentImporter:
 
             i = 0
             for gpx_file in self.gpx_files:
-                layer = self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select, use_wgs84,
-                                                     calculate_motion_attributes, overwrite)
+                layer = self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select,
+                                                             use_wgs84, calculate_motion_attributes, overwrite)
                 if layer is not None:
                     QgsProject.instance().addMapLayer(layer)
 

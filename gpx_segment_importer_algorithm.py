@@ -83,7 +83,7 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
         #                                                 True, True))
 
         # We add a vector layer as output
-        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr('Output'),
+        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr('Track segments'),
                                                             QgsProcessing.TypeVectorLine))
 
     def processAlgorithm(self, parameters, context, feedback):

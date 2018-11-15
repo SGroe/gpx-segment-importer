@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>441</width>
-    <height>522</height>
+    <height>492</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -104,19 +104,6 @@
        <widget class="QCheckBox" name="chkCalculateMotionAttributes">
         <property name="text">
          <string>Calculate distance, speed und duration between track points</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="chkUseWgs84">
-        <property name="text">
-         <string>Use 'EPSG:4326' coordinate reference system</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-        <property name="tristate">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
