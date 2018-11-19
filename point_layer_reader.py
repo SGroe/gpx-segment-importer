@@ -12,6 +12,7 @@ class PointLayerReader:
     def __init__(self):
         self.attribute_definitions = list()
         self.error_message = ''
+        self.equal_coordintes = 0
 
     def get_table_data(self, point_layer):
         """ Reads the first GPX track point and create datatype definitions from the available attributes """
@@ -43,11 +44,13 @@ class PointLayerReader:
                                                  attribute_select, point_layer.sourceCrs())
 
         prev_track_point = None
+        self.equal_coordintes = 0
 
         for track_point in point_layer.getFeatures():
             if prev_track_point is not None:
                 if GeomTools.is_equal_coordinate(prev_track_point.geometry().asPoint(),
                                                  track_point.geometry().asPoint()):
+                    self.equal_coordintes += 1
                     continue
 
                 # add a feature with first/last/both attributes

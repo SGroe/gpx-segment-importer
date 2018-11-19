@@ -111,7 +111,7 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         layer = self.point_layer_reader.import_gpx_file(source, timestamp_field, "", attribute_mode,
                                                         calculate_motion_attributes)
 
-        if self.gpx_file_reader.equal_coordintes > 0:
+        if self.point_layer_reader.equal_coordintes > 0:
             feedback.reportError('Cannot create ' + str(self.gpx_file_reader.equal_coordintes) +
                                  ' segments because of equal coordinates')
 
