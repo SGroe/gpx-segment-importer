@@ -28,8 +28,8 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
         # used when calling the algorithm from another algorithm, or when
         # calling from the QGIS console.
 
-        self.alg_name = "GPX segment importer"
-        self.alg_display_name = "GPX segment importer"
+        self.alg_name = "Import GPX segments"
+        self.alg_display_name = "Import GPX segments"
         self.alg_group = "GPX segment tools"
 
         self.INPUT = 'INPUT'

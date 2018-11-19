@@ -28,8 +28,8 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         # used when calling the algorithm from another algorithm, or when
         # calling from the QGIS console.
 
-        self.alg_name = "Track segment creator"
-        self.alg_display_name = "Track segment creator"
+        self.alg_name = "Create track segments"
+        self.alg_display_name = "Create track segments"
         self.alg_group = "GPX segment tools"
 
         self.INPUT = 'INPUT'
