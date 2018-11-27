@@ -308,7 +308,8 @@ class GpxSegmentImporter:
         self.dlg.btnOutputDirectory.setText('Output directory')
         self.dlg.txtOutputDirectory.clear()
         self.dlg.txtOutputDirectory.setText('[Create temporary layer]')
-        self.dlg.lblFeedback.setText('')
+        self.dlg.lblFeedback.setText('This dialog will be removed in a future version. Please use the algorithm '
+                                     '\'Import GPX segments\' from the toolbox instead!')
 
     def create_table(self):
         # create the view

@@ -148,8 +148,8 @@
      <property name="styleSheet">
       <string notr="true">color: rgb(255, 0, 0)</string>
      </property>
-     <property name="text">
-      <string/>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
