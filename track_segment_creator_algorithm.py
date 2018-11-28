@@ -100,8 +100,6 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
-        # if source is None:  # https://github.com/qgis/QGIS/blob/master/python/plugins/processing/algs/qgis/PointsLayerFromTable.py
-        #     raise QgsProcessingException(self.invalidSourceError(parameters, self.INPUT))
         timestamp_field = self.parameterAsString(parameters, self.TIMESTAMP_FIELD, context)
         # timestamp_format = self.parameterAsString(parameters, self.TIMESTAMP_FORMAT, context)
         attribute_mode = self.attribute_mode_options[self.parameterAsInt(parameters, self.ATTRIBUTE_MODE, context)]
@@ -112,7 +110,7 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
                                                         calculate_motion_attributes)
 
         if self.point_layer_reader.equal_coordintes > 0:
-            feedback.reportError('Cannot create ' + str(self.gpx_file_reader.equal_coordintes) +
+            feedback.reportError('Cannot create ' + str(self.point_layer_reader.equal_coordintes) +
                                  ' segments because of equal coordinates')
 
         if self.point_layer_reader.error_message != '':
