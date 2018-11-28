@@ -30,10 +30,11 @@ repository=https://github.com/SGroe/gpx-segment-importer
 
 # Recommended items:
 
-changelog=2.2 (2018-11-15)
+changelog=2.2 (2018-11-27)
     - Add new algorithm 'Track segment creator'
     - Add warning if track points with equal coordinates prevent creating segments
     - Remove option to use EPSG:4326
+    - Deprecate 'GPX segment importer' dialog (use algorithm instead)
     - Bug fixes
     2.1 (2018-02-20)
     - Importer added as QgisAlgorithm to enable usage in processing
