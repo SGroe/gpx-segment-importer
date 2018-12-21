@@ -10,7 +10,7 @@
 name=GPX Segment Importer
 qgisMinimumVersion=3.0
 description=This plugin imports an GPX file and creates short line segments between the track points
-version=2.2
+version=2.3
 author=Simon Gröchenig @ Salzburg Research
 email=simon.groechenig@salzburgresearch.at
 
@@ -30,7 +30,10 @@ repository=https://github.com/SGroe/gpx-segment-importer
 
 # Recommended items:
 
-changelog=2.2 (2018-11-27)
+changelog=2.3 (future)
+    - Use algorithm output to show number of created and skipped segments
+    - German translation
+    2.2 (2018-11-27)
     - Add new algorithm 'Track segment creator'
     - Add warning if track points with equal coordinates prevent creating segments
     - Remove option to use EPSG:4326

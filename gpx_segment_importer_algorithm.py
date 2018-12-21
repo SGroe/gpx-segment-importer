@@ -3,7 +3,7 @@ from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 # from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (Qgis, QgsProcessingAlgorithm, QgsProcessingParameterBoolean, QgsProcessingParameterEnum,
                        QgsProcessingParameterFile, QgsProcessingParameterFeatureSink, QgsProcessing, QgsFeature,
-                       QgsFeatureSink, QgsWkbTypes)
+                       QgsFeatureSink, QgsProcessingOutputNumber, QgsWkbTypes)
 # plugin
 from .gpx_file_reader import GpxFileReader
 
@@ -28,17 +28,19 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
         # used when calling the algorithm from another algorithm, or when
         # calling from the QGIS console.
 
-        self.alg_name = "Import GPX segments"
-        self.alg_display_name = "Import GPX segments"
-        self.alg_group = "GPX segment tools"
+        self.alg_name = self.tr("Import GPX segments")
+        self.alg_display_name = self.tr("Import GPX segments")
+        self.alg_group = self.tr("GPX segment tools")
 
         self.INPUT = 'INPUT'
         self.ATTRIBUTE_MODE = 'ATTRIBUTE_MODE'
         self.CALCULATE_MOTION_ATTRIBUTES = 'CALCULATE_MOTION_ATTRIBUTES'
         # self.USE_EPSG_4326 = 'USE_EPSG_4326'
         self.OUTPUT = 'OUTPUT'
+        self.OUTPUT_SEGMENT_COUNT = 'OUTPUT_SEGMENT_COUNT'
+        self.OUTPUT_EQUAL_COORDINATE_COUNT = 'OUTPUT_EQUAL_COORDINATE_COUNT'
 
-        self.attribute_mode_options = ['Both', 'First', 'Last']
+        self.attribute_mode_options = [self.tr('Both'), self.tr('First'), self.tr('Last')]
 
         self.gpx_file_reader = GpxFileReader()
 
@@ -50,10 +52,6 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
 
     def group(self):
         return self.alg_group
-
-    # def tr(self, text, context):
-    #     # return self.tr("gpxsegmentimporter", text)
-    #     return super(text, context)
 
     def initAlgorithm(self, config=None):
         """Here we define the inputs and output of the algorithm, along
@@ -86,6 +84,11 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
         self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr('Track segments'),
                                                             QgsProcessing.TypeVectorLine))
 
+        self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_SEGMENT_COUNT, self.tr('Number of segments')))
+        self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_EQUAL_COORDINATE_COUNT,
+                                                 self.tr('Number of segments which are not created because of equal  '
+                                                         'coordinates')))
+
     def processAlgorithm(self, parameters, context, feedback):
         pass
         input_file = self.parameterAsFile(parameters, self.INPUT, context)
@@ -95,9 +98,6 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
 
         layer = self.gpx_file_reader.import_gpx_file(input_file, None, attribute_mode, use_epsg4326,
                                                      calculate_motion_attributes, False)
-        if self.gpx_file_reader.equal_coordintes > 0:
-            feedback.reportError('Cannot create ' + str(self.gpx_file_reader.equal_coordintes) +
-                                 ' segments because of equal coordinates')
 
         if self.gpx_file_reader.error_message != '':
             feedback.reportError(self.gpx_file_reader.error_message, True)
@@ -118,4 +118,6 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
             # Update the progress bar
             feedback.setProgress(int(current * total))
 
-        return {self.OUTPUT: dest_id}
+        return {self.OUTPUT: dest_id,
+                self.OUTPUT_SEGMENT_COUNT: layer.featureCount(),
+                self.OUTPUT_EQUAL_COORDINATE_COUNT: self.gpx_file_reader.equal_coordintes}

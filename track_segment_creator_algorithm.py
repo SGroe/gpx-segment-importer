@@ -3,7 +3,7 @@ from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 # from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (Qgis, QgsProcessingParameterBoolean, QgsProcessingParameterEnum, QgsProcessing, QgsFeatureSink,
                        QgsProcessingParameterFeatureSource, QgsProcessingParameterFeatureSink, QgsFeature, QgsWkbTypes,
-                       QgsProcessingParameterField, QgsProcessingParameterString)
+                       QgsProcessingParameterField, QgsProcessingParameterString, QgsProcessingOutputNumber)
 # plugin
 from .point_layer_reader import PointLayerReader
 
@@ -28,9 +28,9 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         # used when calling the algorithm from another algorithm, or when
         # calling from the QGIS console.
 
-        self.alg_name = "Create track segments"
-        self.alg_display_name = "Create track segments"
-        self.alg_group = "GPX segment tools"
+        self.alg_name = self.tr("Create track segments")
+        self.alg_display_name = self.tr("Create track segments")
+        self.alg_group = self.tr("GPX segment tools")
 
         self.INPUT = 'INPUT'
         self.TIMESTAMP_FIELD = 'TIMESTAMP_FIELD'
@@ -39,8 +39,10 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         self.CALCULATE_MOTION_ATTRIBUTES = 'CALCULATE_MOTION_ATTRIBUTES'
         # self.USE_EPSG_4326 = 'USE_EPSG_4326'
         self.OUTPUT = 'OUTPUT'
+        self.OUTPUT_SEGMENT_COUNT = 'OUTPUT_SEGMENT_COUNT'
+        self.OUTPUT_EQUAL_COORDINATE_COUNT = 'OUTPUT_EQUAL_COORDINATE_COUNT'
 
-        self.attribute_mode_options = ['Both', 'First', 'Last']
+        self.attribute_mode_options = [self.tr('Both'), self.tr('First'), self.tr('Last')]
 
         self.point_layer_reader = PointLayerReader()
 
@@ -52,9 +54,6 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
 
     def group(self):
         return self.alg_group
-
-    # def tr(self, text):
-    #     return self.tr("gpxsegmentimporter", text)
 
     def initAlgorithm(self, config=None):
         """Here we define the inputs and output of the algorithm, along
@@ -98,6 +97,10 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr('Track segments'),
                                                             QgsProcessing.TypeVectorLine))
 
+        self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_SEGMENT_COUNT, self.tr('Number of segments')))
+        self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_EQUAL_COORDINATE_COUNT,
+                                                 self.tr('Number of segments which are not created because of equal coordinates')))
+
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
         timestamp_field = self.parameterAsString(parameters, self.TIMESTAMP_FIELD, context)
@@ -108,10 +111,6 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
 
         layer = self.point_layer_reader.import_gpx_file(source, timestamp_field, "", attribute_mode,
                                                         calculate_motion_attributes)
-
-        if self.point_layer_reader.equal_coordintes > 0:
-            feedback.reportError('Cannot create ' + str(self.point_layer_reader.equal_coordintes) +
-                                 ' segments because of equal coordinates')
 
         if self.point_layer_reader.error_message != '':
             feedback.reportError(self.gpx_file_reader.error_message, True)
@@ -132,4 +131,6 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
             # Update the progress bar
             feedback.setProgress(int(current * total))
 
-        return {self.OUTPUT: dest_id}
+        return {self.OUTPUT: dest_id,
+                self.OUTPUT_SEGMENT_COUNT: layer.featureCount(),
+                self.OUTPUT_EQUAL_COORDINATE_COUNT: self.point_layer_reader.equal_coordintes}

@@ -59,7 +59,7 @@ class GpxSegmentImporter:
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
-            'GpxSegmentImporter_{}.qm'.format(QSettings().value('locale/userLocale')[0:2]))
+            'gpx_segment_importer_{}.qm'.format(QSettings().value('locale/userLocale')[0:2]))
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
@@ -100,7 +100,7 @@ class GpxSegmentImporter:
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate('GpxSegmentImporter', message)
+        return QCoreApplication.translate('gpx_segment_importer', message)
 
     def add_action(self, icon_path, text, callback, enabled_flag=True, add_to_menu=True, add_to_toolbar=True,
                    status_tip=None, whats_this=None, parent=None):
@@ -308,8 +308,9 @@ class GpxSegmentImporter:
         self.dlg.btnOutputDirectory.setText('Output directory')
         self.dlg.txtOutputDirectory.clear()
         self.dlg.txtOutputDirectory.setText('[Create temporary layer]')
-        self.dlg.lblFeedback.setText('This dialog will be removed in a future version. Please use the algorithm '
-                                     '\'Import GPX segments\' from the toolbox instead!')
+        self.dlg.lblFeedback.setText(
+            self.tr('This dialog will be removed in a future version. ') + self.tr(
+                'Please use the algorithm [Import GPX segments] from the toolbox instead!'))
 
     def create_table(self):
         # create the view
