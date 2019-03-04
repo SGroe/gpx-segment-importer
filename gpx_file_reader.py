@@ -35,10 +35,11 @@ class GpxFileReader:
         if track is not None:
             track_segment = track.find('gpx:trkseg', self.namespace)
             if track_segment is not None:
-                track_point = track_segment.find('gpx:trkpt', self.namespace)
-                if track_point is not None:
-                    for child in track_point:
-                        self.detect_attribute(child)
+                track_points = track_segment.findall('gpx:trkpt', self.namespace)
+                if len(track_points) > 0:
+                    for track_point in track_points:
+                        for child in track_point:
+                            self.detect_attribute(child)
                 else:
                     self.error_message = 'Cannot find trkpt-tag in GPX file'
             else:
@@ -122,17 +123,28 @@ class GpxFileReader:
 
         if len(element) == 0:  # only elements without children
             if element.get('key') is not None:
-                self.attribute_definitions.append(DataTypeDefinition(
+                new_definition = DataTypeDefinition(
                     element.get('key'),
                     DataTypes.detect_data_type(element.get('value')),
                     element.get('value') is not None and element.get('value') != '',
-                    element.get('value')))
+                    element.get('value'))
             else:
-                self.attribute_definitions.append(DataTypeDefinition(
+                new_definition = DataTypeDefinition(
                     self.normalize(element.tag),
                     DataTypes.detect_data_type(element.text),
                     element.text is not None and element.text != '',
-                    element.text))
+                    element.text)
+            if new_definition:
+                detected = False
+                for definition in self.attribute_definitions:
+                    if definition.attribute_key == new_definition.attribute_key:
+                        detected = True
+                        break
+                if detected is False:
+                    print('new definition ' + new_definition.attribute_key)
+                    self.attribute_definitions.append(new_definition)
+                else:
+                    print('NO new definition ' + new_definition.attribute_key)
         for child in element:
             self.detect_attribute(child)
 
