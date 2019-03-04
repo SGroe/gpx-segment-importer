@@ -42,7 +42,8 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         self.OUTPUT_SEGMENT_COUNT = 'OUTPUT_SEGMENT_COUNT'
         self.OUTPUT_EQUAL_COORDINATE_COUNT = 'OUTPUT_EQUAL_COORDINATE_COUNT'
 
-        self.attribute_mode_options = [self.tr('Both'), self.tr('First'), self.tr('Last')]
+        self.attribute_mode_options = ['Both', 'First', 'Last']
+        self.attribute_mode_options_labels = [self.tr('Both'), self.tr('First'), self.tr('Last')]
 
         self.point_layer_reader = PointLayerReader()
 
@@ -82,7 +83,7 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         #                                                '%Y-%m-%dT%H:%M:%S', False, True))
         self.addParameter(QgsProcessingParameterEnum(self.ATTRIBUTE_MODE,
                                                      self.tr('Add attributes from which segment track point(s)'),
-                                                     options=self.attribute_mode_options,
+                                                     options=self.attribute_mode_options_labels,
                                                      allowMultiple=False, defaultValue=2, optional=False))
         self.addParameter(QgsProcessingParameterBoolean(self.CALCULATE_MOTION_ATTRIBUTES,
                                                         self.tr(
@@ -99,7 +100,8 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
 
         self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_SEGMENT_COUNT, self.tr('Number of segments')))
         self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_EQUAL_COORDINATE_COUNT,
-                                                 self.tr('Number of segments which are not created because of equal coordinates')))
+                                                 self.tr('Number of segments which are not created because of equal'
+                                                         'coordinates')))
 
     def processAlgorithm(self, parameters, context, feedback):
         source = self.parameterAsSource(parameters, self.INPUT, context)
