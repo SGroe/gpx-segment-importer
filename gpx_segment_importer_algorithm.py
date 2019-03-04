@@ -40,7 +40,8 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
         self.OUTPUT_SEGMENT_COUNT = 'OUTPUT_SEGMENT_COUNT'
         self.OUTPUT_EQUAL_COORDINATE_COUNT = 'OUTPUT_EQUAL_COORDINATE_COUNT'
 
-        self.attribute_mode_options = [self.tr('Both'), self.tr('First'), self.tr('Last')]
+        self.attribute_mode_options = ['Both', 'First', 'Last']
+        self.attribute_mode_options_labels = [self.tr('Both'), self.tr('First'), self.tr('Last')]
 
         self.gpx_file_reader = GpxFileReader()
 
@@ -69,7 +70,7 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
                                                      None, False))  # [ParameterVector.VECTOR_TYPE_ANY], False))
         self.addParameter(QgsProcessingParameterEnum(self.ATTRIBUTE_MODE,
                                                      self.tr('Add attributes from which segment track point(s)'),
-                                                     options=self.attribute_mode_options,
+                                                     options=self.attribute_mode_options_labels,
                                                      allowMultiple=False, defaultValue=2, optional=False))
         self.addParameter(QgsProcessingParameterBoolean(self.CALCULATE_MOTION_ATTRIBUTES,
                                                         self.tr(
