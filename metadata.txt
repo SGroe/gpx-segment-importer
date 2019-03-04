@@ -30,7 +30,8 @@ repository=https://github.com/SGroe/gpx-segment-importer
 
 # Recommended items:
 
-changelog=2.3 (future)
+changelog=2.3 (2019-03-04)
+    - Iterate over all track points to find attributes
     - Use algorithm output to show number of created and skipped segments
     - German translation
     2.2 (2018-11-27)
