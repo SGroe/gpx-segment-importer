@@ -12,7 +12,7 @@ class GpxFeatureBuilder:
     def __init__(self, layer_name, attribute_definitions, attribute_select='Last', crs=None):
         self.error_message = ''
 
-        layer_definition = 'LineString'
+        layer_definition: str = 'LineString'
         if crs is not None:
             layer_definition = layer_definition + "?crs=epsg:" + str(crs.postgisSrid())
 
@@ -54,7 +54,7 @@ class GpxFeatureBuilder:
 
     def add_feature(self, line_coordinates, attributes):
         feature = QgsFeature()
-        feature.setGeometry(QgsGeometry.fromPolylineXY(line_coordinates))
+        feature.setGeometry(QgsGeometry.fromPolyline(line_coordinates))
         feature.setFields(self.vector_layer.fields(), True)
         for attribute_key in list(attributes.keys()):
             try:

@@ -1,6 +1,7 @@
-from qgis.core import QgsProject, QgsDistanceArea
+from qgis.core import QgsProject, QgsDistanceArea, QgsPointXY
 import math
 import datetime
+
 
 class GeomTools:
     def __init__(self):
@@ -41,7 +42,7 @@ class GeomTools:
                 distance.setEllipsoid(distance.sourceCrs().ellipsoidAcronym())
         else:
             distance.setEllipsoid('WGS84')
-        return distance.measureLine(start, end)
+        return distance.measureLine(QgsPointXY(start), QgsPointXY(end))
 
     @staticmethod
     def distance_andoyer(start, end):

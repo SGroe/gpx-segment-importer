@@ -1,7 +1,6 @@
 # Initialize Qt resources from file resources.py
 from xml.etree import ElementTree
-from qgis.core import (QgsVectorLayer, QgsField, QgsGeometry, QgsFeature, QgsPointXY, QgsVectorLayer,
-                       QgsCoordinateReferenceSystem)
+from qgis.core import (QgsPoint, QgsCoordinateReferenceSystem)
 from .datatype_definition import (DataTypeDefinition, DataTypes)
 from .gpx_feature_builder import GpxFeatureBuilder
 from .geom_tools import GeomTools
@@ -62,6 +61,7 @@ class GpxFileReader:
             self.attribute_definitions.append(DataTypeDefinition('_distance', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_duration', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
+            self.attribute_definitions.append(DataTypeDefinition('_elevation_diff', DataTypes.Double, True, ''))
 
         tree = ElementTree.parse(file_path)
         root = tree.getroot()
@@ -79,8 +79,21 @@ class GpxFileReader:
 
             for track_point in track_segment.findall('gpx:trkpt', self.namespace):
                 if prev_track_point is not None:
-                    previous_point = QgsPointXY(float(prev_track_point.get('lon')), float(prev_track_point.get('lat')))
-                    new_point = QgsPointXY(float(track_point.get('lon')), float(track_point.get('lat')))
+                    elevation_a_element = prev_track_point.find('gpx:ele', self.namespace)
+                    elevation_b_element = track_point.find('gpx:ele', self.namespace)
+                    elevation_a = float(elevation_a_element.text) if (elevation_a_element is not None) else None
+                    elevation_b = float(elevation_b_element.text) if (elevation_b_element is not None) else None
+
+                    previous_point = QgsPoint(
+                        float(prev_track_point.get('lon')),
+                        float(prev_track_point.get('lat')),
+                        elevation_a if (elevation_a is not None) else None
+                    )
+                    new_point = QgsPoint(
+                        float(track_point.get('lon')),
+                        float(track_point.get('lat')),
+                        elevation_b if (elevation_b is not None) else None
+                    )
 
                     if GeomTools.is_equal_coordinate(previous_point, new_point):
                         self.equal_coordintes += 1
@@ -97,15 +110,18 @@ class GpxFileReader:
                         self.add_attributes(attributes, track_point, 'b_')
 
                     if calculate_motion_attributes:
+                        attributes['_distance'] = GeomTools.distance(previous_point, new_point, crs)
+
                         time_a = DataTypes.create_date(prev_track_point.find('gpx:time', self.namespace).text)
                         time_b = DataTypes.create_date(track_point.find('gpx:time', self.namespace).text)
-
-                        attributes['_distance'] = GeomTools.distance(previous_point, new_point, crs)
 
                         if time_a is not None or time_b is not None:
                             attributes['_duration'] = GeomTools.calculate_duration(time_a, time_b)
                             attributes['_speed'] = GeomTools.calculate_speed(time_a, time_b, previous_point, new_point,
                                                                              crs)
+
+                        if elevation_a is not None or elevation_b is not None:
+                            attributes['_elevation_diff'] = elevation_b - elevation_a
 
                     vector_layer_builder.add_feature([previous_point, new_point], attributes)
 
