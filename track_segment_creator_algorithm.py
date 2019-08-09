@@ -87,8 +87,7 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
                                                      allowMultiple=False, defaultValue=2, optional=False))
         self.addParameter(QgsProcessingParameterBoolean(self.CALCULATE_MOTION_ATTRIBUTES,
                                                         self.tr(
-                                                            'Calculate distance, speed and duration between ' +
-                                                            'track points'),
+                                                            'Calculate motion attributes between track points'),
                                                         defaultValue=True, optional=True))
         # self.addParameter(QgsProcessingParameterBoolean(self.USE_EPSG_4326,
         #                                                 self.tr('Use \'EPSG:4326\' coordinate reference system'),

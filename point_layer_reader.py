@@ -39,6 +39,7 @@ class PointLayerReader:
             self.attribute_definitions.append(DataTypeDefinition('_distance', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_duration', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
+            self.attribute_definitions.append(DataTypeDefinition('_elevation_diff', DataTypes.Double, True, ''))
 
         vector_layer_builder = GpxFeatureBuilder(point_layer.sourceName(), self.attribute_definitions,
                                                  attribute_select, point_layer.sourceCrs())
@@ -64,6 +65,10 @@ class PointLayerReader:
                     self.add_attributes(attributes, track_point, 'b_')
 
                 if calculate_motion_attributes:
+                    attributes['_distance'] = GeomTools.distance(prev_track_point.geometry().constGet(),
+                                                                 track_point.geometry().constGet(),
+                                                                 point_layer.sourceCrs())
+
                     time_a = None
                     time_b = None
                     if type(track_point[timestamp_field]) is QDateTime:
@@ -75,19 +80,19 @@ class PointLayerReader:
                         time_a = DataTypes.create_date(prev_track_point[timestamp_field], timestamp_format)
                         time_b = DataTypes.create_date(track_point[timestamp_field], timestamp_format)
 
-                    attributes['_distance'] = GeomTools.distance(prev_track_point.geometry().asPoint(),
-                                                                 track_point.geometry().asPoint(),
-                                                                 point_layer.sourceCrs())
-
                     if time_a is not None and time_b is not None:
                         attributes['_duration'] = GeomTools.calculate_duration(time_a, time_b)
                         attributes['_speed'] = GeomTools.calculate_speed(time_a, time_b,
-                                                                         prev_track_point.geometry().asPoint(),
-                                                                         track_point.geometry().asPoint(),
+                                                                         prev_track_point.geometry().constGet(),
+                                                                         track_point.geometry().constGet(),
                                                                          point_layer.sourceCrs())
+                    if prev_track_point.geometry().constGet().is3D():
+                        elevation_a = prev_track_point.geometry().vertexAt(0).z()
+                        elevation_b = track_point.geometry().vertexAt(0).z()
+                        attributes['_elevation_diff'] = elevation_b - elevation_a
 
-                vector_layer_builder.add_feature([prev_track_point.geometry().asPoint(),
-                                                  track_point.geometry().asPoint()], attributes)
+                vector_layer_builder.add_feature([prev_track_point.geometry().constGet(),
+                                                  track_point.geometry().constGet()], attributes)
 
             prev_track_point = track_point
 
