@@ -1,9 +1,9 @@
 # qgis imports
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 # from qgis.PyQt.QtCore import QCoreApplication
-from qgis.core import (Qgis, QgsProcessingAlgorithm, QgsProcessingParameterBoolean, QgsProcessingParameterEnum,
-                       QgsProcessingParameterFile, QgsProcessingParameterFeatureSink, QgsProcessing, QgsFeature,
-                       QgsFeatureSink, QgsProcessingOutputNumber, QgsWkbTypes)
+from qgis.core import (QgsProcessingParameterBoolean, QgsProcessingParameterEnum, QgsProcessingParameterFile,
+                       QgsProcessingParameterFeatureSink, QgsProcessing, QgsFeatureSink, QgsProcessingOutputNumber,
+                       QgsWkbTypes)
 # plugin
 from .gpx_file_reader import GpxFileReader
 
@@ -38,6 +38,9 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
         # self.USE_EPSG_4326 = 'USE_EPSG_4326'
         self.OUTPUT = 'OUTPUT'
         self.OUTPUT_SEGMENT_COUNT = 'OUTPUT_SEGMENT_COUNT'
+        self.OUTPUT_TRACK_COUNT = 'OUTPUT_TRACK_COUNT'
+        self.OUTPUT_TRACK_SEGMENT_COUNT = 'OUTPUT_TRACK_SEGMENT_COUNT'
+        self.OUTPUT_TRACK_POINT_COUNT = 'OUTPUT_TRACK_POINT_COUNT'
         self.OUTPUT_EQUAL_COORDINATE_COUNT = 'OUTPUT_EQUAL_COORDINATE_COUNT'
 
         self.attribute_mode_options = ['Both', 'First', 'Last']
@@ -54,28 +57,19 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
     def group(self):
         return self.alg_group
 
-    def initAlgorithm(self, config=None):
+    def initAlgorithm(self, configuration=None):
         """Here we define the inputs and output of the algorithm, along
         with some other properties.
         """
 
-        # We add the input vector layer. It can have any kind of geometry
-        # It is a mandatory (not optional) one, hence the False argument
-        # self.addParameter(QgsProcessingParameterFeatureSource(self.INPUT, self.tr('Input gpx file'),
-        #                                                       [QgsProcessing.TypeVectorLine]))
-        self.addParameter(QgsProcessingParameterFile(self.INPUT,
-                                                     self.tr('Input gpx file'),
-                                                     # QgsProcessingParameterFile.Behavior.File, '*.gpx',
-                                                     0, 'gpx',
-                                                     None, False))  # [ParameterVector.VECTOR_TYPE_ANY], False))
+        self.addParameter(QgsProcessingParameterFile(self.INPUT, self.tr('Input gpx file'),
+                                                     0, 'gpx', None, False))
         self.addParameter(QgsProcessingParameterEnum(self.ATTRIBUTE_MODE,
                                                      self.tr('Add attributes from which segment track point(s)'),
-                                                     options=self.attribute_mode_options_labels,
-                                                     allowMultiple=False, defaultValue=2, optional=False))
+                                                     self.attribute_mode_options_labels, False, 2, False))
         self.addParameter(QgsProcessingParameterBoolean(self.CALCULATE_MOTION_ATTRIBUTES,
-                                                        self.tr(
-                                                            'Calculate motion attributes between track points'),
-                                                        defaultValue=True, optional=True))
+                                                        self.tr('Calculate motion attributes between track points'),
+                                                        True, True))
         # self.addParameter(QgsProcessingParameterBoolean(self.USE_EPSG_4326,
         #                                                 self.tr('Use \'EPSG:4326\' coordinate reference system'),
         #                                                 True, True))
@@ -85,6 +79,9 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
                                                             QgsProcessing.TypeVectorLine))
 
         self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_SEGMENT_COUNT, self.tr('Number of segments')))
+        self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_TRACK_COUNT, self.tr('Number of tracks')))
+        self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_TRACK_SEGMENT_COUNT, self.tr('Number of track segments')))
+        self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_TRACK_POINT_COUNT, self.tr('Number of track points')))
         self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_EQUAL_COORDINATE_COUNT,
                                                  self.tr('Number of segments which are not created because of equal  '
                                                          'coordinates')))
@@ -120,4 +117,8 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
 
         return {self.OUTPUT: dest_id,
                 self.OUTPUT_SEGMENT_COUNT: layer.featureCount(),
-                self.OUTPUT_EQUAL_COORDINATE_COUNT: self.gpx_file_reader.equal_coordintes}
+                self.OUTPUT_TRACK_COUNT: self.gpx_file_reader.track_count,
+                self.OUTPUT_TRACK_SEGMENT_COUNT: self.gpx_file_reader.track_segment_count,
+                self.OUTPUT_TRACK_POINT_COUNT: self.gpx_file_reader.track_point_count,
+                self.OUTPUT_EQUAL_COORDINATE_COUNT: self.gpx_file_reader.equal_coordinates
+                }

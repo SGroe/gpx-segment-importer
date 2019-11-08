@@ -10,7 +10,7 @@
 name=GPX Segment Importer
 qgisMinimumVersion=3.0
 description=This plugin imports an GPX file and creates short line segments between the track points
-version=2.4
+version=2.5
 author=Simon Gröchenig @ Salzburg Research
 email=simon.groechenig@salzburgresearch.at
 
@@ -30,9 +30,11 @@ repository=https://github.com/SGroe/gpx-segment-importer
 
 # Recommended items:
 
-changelog=2.4 (2019-08-12)
-    - Create 3d-geometries if elevation tag is available in GPX file
-    - Calculate elevation_diff attribute if elevation tag is available in GPX file
+changelog=2.5 (tba)
+    - Process all track segments if more than 1 is available in GPX file
+    2.4 (2019-08-12)
+    - Create 3D-geometries if elevation tag is available in GPX file or track layer
+    - Calculate elevation_diff attribute if elevation tag is available in GPX file or track layer
     2.3 (2019-03-04)
     - Iterate over all track points to find attributes
     - Use algorithm output to show number of created and skipped segments

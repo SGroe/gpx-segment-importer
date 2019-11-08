@@ -290,9 +290,9 @@ class GpxSegmentImporter:
                 if i == len(self.gpx_files):
                     self.iface.messageBar().clearWidgets()
 
-                if self.gpx_file_reader.equal_coordintes > 0:
+                if self.gpx_file_reader.equal_coordinates > 0:
                     self.iface.messageBar().pushMessage("Error", 'Cannot create ' +
-                                                        str(self.gpx_file_reader.equal_coordintes) +
+                                                        str(self.gpx_file_reader.equal_coordinates) +
                                                         ' segments because of equal coordinates', level=Qgis.Warning)
 
                 if self.gpx_file_reader.error_message != '':

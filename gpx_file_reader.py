@@ -14,7 +14,10 @@ class GpxFileReader:
         self.attribute_definitions = list()
         self.namespace = None
         self.error_message = ''
-        self.equal_coordintes = 0
+        self.track_count = 0
+        self.track_segment_count = 0
+        self.track_point_count = 0
+        self.equal_coordinates = 0
 
     def get_table_data(self, file_path):
         """ Reads the first GPX track point and create datatype definitions from the available attributes """
@@ -71,61 +74,69 @@ class GpxFileReader:
         vector_layer_builder = GpxFeatureBuilder(os.path.basename(file_path), self.attribute_definitions,
                                                  attribute_select, crs)
 
-        prev_track_point = None
-        self.equal_coordintes = 0
+        self.equal_coordinates = 0
+        self.track_count = 0
+        self.track_segment_count = 0
+        self.track_point_count = 0
 
         for track in root.findall('gpx:trk', self.namespace):
-            track_segment = track.find('gpx:trkseg', self.namespace)
+            self.track_count += 1
 
-            for track_point in track_segment.findall('gpx:trkpt', self.namespace):
-                if prev_track_point is not None:
-                    elevation_a_element = prev_track_point.find('gpx:ele', self.namespace)
-                    elevation_b_element = track_point.find('gpx:ele', self.namespace)
-                    elevation_a = float(elevation_a_element.text) if (elevation_a_element is not None) else None
-                    elevation_b = float(elevation_b_element.text) if (elevation_b_element is not None) else None
+            for track_segment in track.findall('gpx:trkseg', self.namespace):
+                self.track_segment_count += 1
+                prev_track_point = None
 
-                    previous_point = QgsPoint(
-                        float(prev_track_point.get('lon')),
-                        float(prev_track_point.get('lat')),
-                        elevation_a if (elevation_a is not None) else None
-                    )
-                    new_point = QgsPoint(
-                        float(track_point.get('lon')),
-                        float(track_point.get('lat')),
-                        elevation_b if (elevation_b is not None) else None
-                    )
+                for track_point in track_segment.findall('gpx:trkpt', self.namespace):
+                    self.track_point_count += 1
 
-                    if GeomTools.is_equal_coordinate(previous_point, new_point):
-                        self.equal_coordintes += 1
-                        continue
+                    if prev_track_point is not None:
+                        elevation_a_element = prev_track_point.find('gpx:ele', self.namespace)
+                        elevation_b_element = track_point.find('gpx:ele', self.namespace)
+                        elevation_a = float(elevation_a_element.text) if (elevation_a_element is not None) else None
+                        elevation_b = float(elevation_b_element.text) if (elevation_b_element is not None) else None
 
-                    # add a feature with first/last/both attributes
-                    attributes = dict()
-                    if attribute_select == 'First':
-                        self.add_attributes(attributes, prev_track_point, '')
-                    elif attribute_select == 'Last':
-                        self.add_attributes(attributes, track_point, '')
-                    elif attribute_select == 'Both':
-                        self.add_attributes(attributes, prev_track_point, 'a_')
-                        self.add_attributes(attributes, track_point, 'b_')
+                        previous_point = QgsPoint(
+                            float(prev_track_point.get('lon')),
+                            float(prev_track_point.get('lat')),
+                            elevation_a if (elevation_a is not None) else None
+                        )
+                        new_point = QgsPoint(
+                            float(track_point.get('lon')),
+                            float(track_point.get('lat')),
+                            elevation_b if (elevation_b is not None) else None
+                        )
 
-                    if calculate_motion_attributes:
-                        attributes['_distance'] = GeomTools.distance(previous_point, new_point, crs)
+                        if GeomTools.is_equal_coordinate(previous_point, new_point):
+                            self.equal_coordinates += 1
+                            continue
 
-                        time_a = DataTypes.create_date(prev_track_point.find('gpx:time', self.namespace).text)
-                        time_b = DataTypes.create_date(track_point.find('gpx:time', self.namespace).text)
+                        # add a feature with first/last/both attributes
+                        attributes = dict()
+                        if attribute_select == 'First':
+                            self.add_attributes(attributes, prev_track_point, '')
+                        elif attribute_select == 'Last':
+                            self.add_attributes(attributes, track_point, '')
+                        elif attribute_select == 'Both':
+                            self.add_attributes(attributes, prev_track_point, 'a_')
+                            self.add_attributes(attributes, track_point, 'b_')
 
-                        if time_a is not None or time_b is not None:
-                            attributes['_duration'] = GeomTools.calculate_duration(time_a, time_b)
-                            attributes['_speed'] = GeomTools.calculate_speed(time_a, time_b, previous_point, new_point,
-                                                                             crs)
+                        if calculate_motion_attributes:
+                            attributes['_distance'] = GeomTools.distance(previous_point, new_point, crs)
 
-                        if elevation_a is not None or elevation_b is not None:
-                            attributes['_elevation_diff'] = elevation_b - elevation_a
+                            time_a = DataTypes.create_date(prev_track_point.find('gpx:time', self.namespace).text)
+                            time_b = DataTypes.create_date(track_point.find('gpx:time', self.namespace).text)
 
-                    vector_layer_builder.add_feature([previous_point, new_point], attributes)
+                            if time_a is not None or time_b is not None:
+                                attributes['_duration'] = GeomTools.calculate_duration(time_a, time_b)
+                                attributes['_speed'] = GeomTools.calculate_speed(time_a, time_b, previous_point,
+                                                                                 new_point, crs)
 
-                prev_track_point = track_point
+                            if elevation_a is not None or elevation_b is not None:
+                                attributes['_elevation_diff'] = elevation_b - elevation_a
+
+                        vector_layer_builder.add_feature([previous_point, new_point], attributes)
+
+                    prev_track_point = track_point
 
         vector_layer = vector_layer_builder.save_layer(output_directory, overwrite)
         if vector_layer_builder.error_message != '':
@@ -157,10 +168,7 @@ class GpxFileReader:
                         detected = True
                         break
                 if detected is False:
-                    print('new definition ' + new_definition.attribute_key)
                     self.attribute_definitions.append(new_definition)
-                else:
-                    print('NO new definition ' + new_definition.attribute_key)
         for child in element:
             self.detect_attribute(child)
 
