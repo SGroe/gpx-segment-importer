@@ -20,7 +20,7 @@ class GeomTools:
         if time_diff_h > 0:
             return float((distance / 1000) / (time_diff_h / 3600))
         else:
-            return 0
+            return None
 
     @staticmethod
     def calculate_duration(time_a, time_b):
@@ -28,9 +28,7 @@ class GeomTools:
             duration = (time_b - time_a).total_seconds()
         else:
             duration = time_a.msecsTo(time_b) / 1000
-        if float(duration):
-            return duration
-        return None
+        return duration
 
     @staticmethod
     def distance(start, end, crs):
