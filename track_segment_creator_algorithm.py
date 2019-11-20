@@ -114,7 +114,7 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
                                                         calculate_motion_attributes)
 
         if self.point_layer_reader.error_message != '':
-            feedback.reportError(self.gpx_file_reader.error_message, True)
+            feedback.reportError(self.point_layer_reader.error_message, True)
 
         (sink, dest_id) = self.parameterAsSink(parameters, self.OUTPUT, context,
                                                layer.fields(), QgsWkbTypes.LineString, layer.sourceCrs())
