@@ -99,7 +99,7 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
 
         self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_SEGMENT_COUNT, self.tr('Number of segments')))
         self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_EQUAL_COORDINATE_COUNT,
-                                                 self.tr('Number of segments which are not created because of equal'
+                                                 self.tr('Number of segments which are not created because of equal '
                                                          'coordinates')))
 
     def processAlgorithm(self, parameters, context, feedback):
