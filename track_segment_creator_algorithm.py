@@ -71,9 +71,8 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
                                                               None, False))
         self.addParameter(QgsProcessingParameterField(self.TIMESTAMP_FIELD,
                                                       self.tr('Timestamp field'),
-                                                      parentLayerParameterName=self.INPUT,
-                                                      # type=QgsProcessingParameterField.Any))
-                                                      type=QgsProcessingParameterField.DateTime))
+                                                      self.INPUT,
+                                                      QgsProcessingParameterField.DateTime))
         # self.addParameter(QgsProcessingParameterString(self.TIMESTAMP_FIELD,
         #                                                self.tr('Timestamp field'),
         #                                                None, False, False))
@@ -83,12 +82,11 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         #                                                '%Y-%m-%dT%H:%M:%S', False, True))
         self.addParameter(QgsProcessingParameterEnum(self.ATTRIBUTE_MODE,
                                                      self.tr('Add attributes from which segment track point(s)'),
-                                                     options=self.attribute_mode_options_labels,
-                                                     allowMultiple=False, defaultValue=2, optional=False))
+                                                     self.attribute_mode_options_labels,
+                                                     False, 2, False))
         self.addParameter(QgsProcessingParameterBoolean(self.CALCULATE_MOTION_ATTRIBUTES,
-                                                        self.tr(
-                                                            'Calculate motion attributes between track points'),
-                                                        defaultValue=True, optional=True))
+                                                        self.tr('Calculate motion attributes between track points'),
+                                                        True, True))
         # self.addParameter(QgsProcessingParameterBoolean(self.USE_EPSG_4326,
         #                                                 self.tr('Use \'EPSG:4326\' coordinate reference system'),
         #                                                 True, True))
