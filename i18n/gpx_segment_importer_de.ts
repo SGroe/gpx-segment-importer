@@ -1,29 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="2.0" language="af" sourcelanguage="en">
 <context>
-    <name>@default</name>
-    <message>
-        <location filename="gpx_segment_importer_algorithm.py" line="48"/>
-        <source>Input gpx file</source>
-        <translation type="obsolete">GPX-Datei</translation>
-    </message>
-    <message>
-        <location filename="gpx_segment_importer_algorithm.py" line="48"/>
-        <source>Add attributes from which segment track point(s)</source>
-        <translation type="obsolete">Attribute von welchem Trackpunkt zum Segment hinzufügen</translation>
-    </message>
-    <message>
-        <location filename="gpx_segment_importer_algorithm.py" line="48"/>
-        <source>Calculate distance, speed and duration between track points</source>
-        <translation type="obsolete">Distanz, Geschwindigkeit und Dauer zwischen Track-Punkten berechnen</translation>
-    </message>
-    <message>
-        <location filename="gpx_segment_importer_algorithm.py" line="48"/>
-        <source>Track segments</source>
-        <translation type="obsolete">Segmente</translation>
-    </message>
-</context>
-<context>
     <name>GpxSegmentImporter</name>
     <message>
         <location filename="../gpx_segment_importer.py" line="187"/>
@@ -44,34 +21,24 @@
 <context>
     <name>GpxSegmentImporterAlgorithm</name>
     <message>
-        <location filename="../gpx_segment_importer_algorithm.py" line="68"/>
+        <location filename="../gpx_segment_importer_algorithm.py" line="65"/>
         <source>Input gpx file</source>
         <translation>GPX-Datei</translation>
     </message>
     <message>
-        <location filename="../gpx_segment_importer_algorithm.py" line="73"/>
+        <location filename="../gpx_segment_importer_algorithm.py" line="67"/>
         <source>Add attributes from which segment track point(s)</source>
         <translation>Attribute von welchem Trackpunkt zum Segment hinzufügen</translation>
     </message>
     <message>
-        <location filename="../gpx_segment_importer_algorithm.py" line="77"/>
-        <source>Calculate distance, speed and duration between track points</source>
-        <translation>Distanz, Geschwindigkeit und Dauer zwischen Track-Punkten berechnen</translation>
-    </message>
-    <message>
-        <location filename="../gpx_segment_importer_algorithm.py" line="87"/>
+        <location filename="../gpx_segment_importer_algorithm.py" line="78"/>
         <source>Track segments</source>
         <translation>Segmente</translation>
     </message>
     <message>
-        <location filename="../gpx_segment_importer_algorithm.py" line="90"/>
+        <location filename="../gpx_segment_importer_algorithm.py" line="81"/>
         <source>Number of segments</source>
         <translation>Anzahl von Segmente</translation>
-    </message>
-    <message>
-        <location filename="../gpx_segment_importer_algorithm.py" line="92"/>
-        <source>Number of segments which are not created because of equal coordinates</source>
-        <translation type="obsolete">Anzahl von Segmente, die aufgrund gleicher Koordinaten nicht erstellt wurden</translation>
     </message>
     <message>
         <location filename="../gpx_segment_importer_algorithm.py" line="32"/>
@@ -84,24 +51,44 @@
         <translation>GPX Segment Werkzeuge</translation>
     </message>
     <message>
-        <location filename="../gpx_segment_importer_algorithm.py" line="91"/>
+        <location filename="../gpx_segment_importer_algorithm.py" line="85"/>
         <source>Number of segments which are not created because of equal  coordinates</source>
         <translation>Anzahl von Segmente, die aufgrund gleicher Koordinaten nicht erstellt wurden</translation>
     </message>
     <message>
-        <location filename="../gpx_segment_importer_algorithm.py" line="43"/>
+        <location filename="../gpx_segment_importer_algorithm.py" line="47"/>
         <source>Both</source>
         <translation>Track-Punkte davor und danach</translation>
     </message>
     <message>
-        <location filename="../gpx_segment_importer_algorithm.py" line="43"/>
+        <location filename="../gpx_segment_importer_algorithm.py" line="47"/>
         <source>First</source>
         <translation>Track-Punkt davor</translation>
     </message>
     <message>
-        <location filename="../gpx_segment_importer_algorithm.py" line="43"/>
+        <location filename="../gpx_segment_importer_algorithm.py" line="47"/>
         <source>Last</source>
         <translation>Track-Punkt danach</translation>
+    </message>
+    <message>
+        <location filename="../gpx_segment_importer_algorithm.py" line="70"/>
+        <source>Calculate motion attributes between track points</source>
+        <translation>Bewegungsattribute zwischen Track-Punkten berechnen</translation>
+    </message>
+    <message>
+        <location filename="../gpx_segment_importer_algorithm.py" line="82"/>
+        <source>Number of tracks</source>
+        <translation>Anzahl Tracks</translation>
+    </message>
+    <message>
+        <location filename="../gpx_segment_importer_algorithm.py" line="83"/>
+        <source>Number of track segments</source>
+        <translation>Anzahl Track Segmente</translation>
+    </message>
+    <message>
+        <location filename="../gpx_segment_importer_algorithm.py" line="84"/>
+        <source>Number of track points</source>
+        <translation>Anzahl Trackpunkte</translation>
     </message>
 </context>
 <context>
@@ -153,8 +140,8 @@
     </message>
     <message>
         <location filename="../gpx_segment_importer_dialog_base.ui" line="106"/>
-        <source>Calculate distance, speed und duration between track points</source>
-        <translation>Distanz, Geschwindigkeit und Dauer zwischen Track Punkten berechnen</translation>
+        <source>Calculate motion attributes between track points</source>
+        <translation>Bewegungsattribute zwischen Track-Punkten berechnen</translation>
     </message>
     <message>
         <location filename="../gpx_segment_importer_dialog_base.ui" line="116"/>
@@ -171,7 +158,7 @@
         <source>Output directory</source>
         <translation>Ausgabe-Verzeichnis</translation>
     </message>
-</context>
+</context>0
 <context>
     <name>TrackSegmentCreatorAlgorithm</name>
     <message>
@@ -185,54 +172,54 @@
         <translation>GPX Segment Werkzeuge</translation>
     </message>
     <message>
-        <location filename="../track_segment_creator_algorithm.py" line="45"/>
+        <location filename="../track_segment_creator_algorithm.py" line="46"/>
         <source>Both</source>
         <translation>Track-Punkte davor und danach</translation>
     </message>
     <message>
-        <location filename="../track_segment_creator_algorithm.py" line="45"/>
+        <location filename="../track_segment_creator_algorithm.py" line="46"/>
         <source>First</source>
         <translation>Track-Punkt davor</translation>
     </message>
     <message>
-        <location filename="../track_segment_creator_algorithm.py" line="45"/>
+        <location filename="../track_segment_creator_algorithm.py" line="46"/>
         <source>Last</source>
         <translation>Track-Punkt danach</translation>
     </message>
     <message>
-        <location filename="../track_segment_creator_algorithm.py" line="70"/>
+        <location filename="../track_segment_creator_algorithm.py" line="68"/>
         <source>Input point layer</source>
         <translation>Punkt-Layer</translation>
     </message>
     <message>
-        <location filename="../track_segment_creator_algorithm.py" line="74"/>
+        <location filename="../track_segment_creator_algorithm.py" line="72"/>
         <source>Timestamp field</source>
         <translation>Datumsfeld</translation>
     </message>
     <message>
-        <location filename="../track_segment_creator_algorithm.py" line="86"/>
+        <location filename="../track_segment_creator_algorithm.py" line="84"/>
         <source>Add attributes from which segment track point(s)</source>
         <translation>Attribute von welchem Trackpunkt zum Segment hinzufügen</translation>
     </message>
     <message>
-        <location filename="../track_segment_creator_algorithm.py" line="90"/>
-        <source>Calculate distance, speed and duration between track points</source>
-        <translation>Distanz, Geschwindigkeit und Dauer zwischen Track-Punkten berechnen</translation>
-    </message>
-    <message>
-        <location filename="../track_segment_creator_algorithm.py" line="100"/>
+        <location filename="../track_segment_creator_algorithm.py" line="97"/>
         <source>Track segments</source>
         <translation>Segmente</translation>
     </message>
     <message>
-        <location filename="../track_segment_creator_algorithm.py" line="103"/>
+        <location filename="../track_segment_creator_algorithm.py" line="100"/>
         <source>Number of segments</source>
         <translation>Anzahl von Segmente</translation>
     </message>
     <message>
-        <location filename="../track_segment_creator_algorithm.py" line="104"/>
+        <location filename="../track_segment_creator_algorithm.py" line="101"/>
         <source>Number of segments which are not created because of equal coordinates</source>
-        <translation>Anzahl von Segmente, die aufgrund gleicher Koordinaten nicht erstellt wurden</translation>
+        <translation>Anzahl an Segmenten, die wegen gleicher Koordinaten nicht </translation>
+    </message>
+    <message>
+        <location filename="../track_segment_creator_algorithm.py" line="88"/>
+        <source>Calculate motion attributes between track points</source>
+        <translation>Bewegungsattribute zwischen Track-Punkten berechnen</translation>
     </message>
 </context>
 </TS>
