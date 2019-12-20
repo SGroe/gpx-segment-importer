@@ -15,14 +15,12 @@ author=Simon Gröchenig @ Salzburg Research
 email=simon.groechenig@salzburgresearch.at
 
 about=This plugin imports an GPX file and creates short line segments between the track points. Features include:
-    * Select one or multiple GPX files with the same data structure at once and create short line segments between the track points.
-    * Read all attributes available from each track point at the segment start and/or end. This includes the timestamp and the elevation as well as any other attributes added to a track point.
-    * To gain full control over the data, you can edit the attribute table before creating the segment layer. The user can select the attributes that should be included in the layer, modify the attribute label and change the data type (integer, double, boolean or string) if the automatic type detection failed, e.g. at numeric data that contains “Null” or “None” values.
-    * The plugin detects attributes that do not have a value and deselects it. Values can still be selected manually.
-    * Optionally calculate motion attributes (distance, speed, duration and elevation_diff) between track points.
-    * Create a temporary memory layer or write the layer to a GeoPackage.
-    * [Update v2.1] GPX segment Importer also available as QGIS algorithm for usage in processing.
-    * [Update v2.2] Add new algorithm 'Track segment creator': Use any point vector dataset that has a timestamp attribute to create line segments.
+    * Available as QGIS dialog in toolbar and also as QGIS algorithm for usage in processing
+    * [dialog, algorithm] Read all attributes available from each track point at the segment start and/or end. This includes the timestamp and the elevation as well as any other attributes added to a track point.
+    * [dialog] Select one or multiple GPX files with the same data structure at once.
+    * [dialog] To gain full control over the data, you can edit the attribute table before creating the segment layer. You can exclude attributes, modify the attribute label and change the data type (integer, double, boolean or string) if the automatic type detection failed, e.g. at numeric data that contains “Null” or “None” values. Also, the plugin detects empty attributes and excludes it by default.
+    * [dialog, algorithm] Optionally calculate motion attributes (track points indices, distance, speed, duration and elevation_diff) between track points.
+    * [algorithm] Second algorithm 'Track segment creator' to apply line segment creator to any point vector dataset that has a timestamp attribute.
 
 tracker=https://github.com/SGroe/gpx-segment-importer/issues
 repository=https://github.com/SGroe/gpx-segment-importer
@@ -30,7 +28,8 @@ repository=https://github.com/SGroe/gpx-segment-importer
 
 # Recommended items:
 
-changelog=2.5 (tba)
+changelog=2.5 (2019-12-20)
+    - Add track point indices to motion attributes
     - Process all track segments if more than 1 is available in GPX file
     - [Bug] Set duration to 0 instead of None if timestamps are equal
     2.4 (2019-08-12)

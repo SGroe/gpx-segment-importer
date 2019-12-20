@@ -68,9 +68,9 @@ class GpxSegmentImporter:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&GpxSegmentImporter')
-        self.toolbar = self.iface.addToolBar(u'GpxSegmentImporter')
-        self.toolbar.setObjectName(u'GpxSegmentImporter')
+        self.menu = self.tr(u'&GPX Segment Tools')
+        self.toolbar = self.iface.addToolBar(u'GPX Segment Toolbar')
+        self.toolbar.setObjectName(u'GPX Segment Toolbar')
 
         # Create the dialog (after translation) and keep reference
         self.dlg = GpxSegmentImporterDialog()
