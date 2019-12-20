@@ -1,9 +1,8 @@
 # qgis imports
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
-# from qgis.PyQt.QtCore import QCoreApplication
-from qgis.core import (Qgis, QgsProcessingParameterBoolean, QgsProcessingParameterEnum, QgsProcessing, QgsFeatureSink,
-                       QgsProcessingParameterFeatureSource, QgsProcessingParameterFeatureSink, QgsFeature, QgsWkbTypes,
-                       QgsProcessingParameterField, QgsProcessingParameterString, QgsProcessingOutputNumber)
+from qgis.core import (QgsProcessingParameterBoolean, QgsProcessingParameterEnum, QgsProcessing, QgsFeatureSink,
+                       QgsProcessingParameterFeatureSource, QgsProcessingParameterFeatureSink, QgsWkbTypes,
+                       QgsProcessingParameterField, QgsProcessingOutputNumber)
 # plugin
 from .point_layer_reader import PointLayerReader
 
@@ -40,6 +39,7 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         # self.USE_EPSG_4326 = 'USE_EPSG_4326'
         self.OUTPUT = 'OUTPUT'
         self.OUTPUT_SEGMENT_COUNT = 'OUTPUT_SEGMENT_COUNT'
+        self.OUTPUT_TRACK_POINT_COUNT = 'OUTPUT_TRACK_POINT_COUNT'
         self.OUTPUT_EQUAL_COORDINATE_COUNT = 'OUTPUT_EQUAL_COORDINATE_COUNT'
 
         self.attribute_mode_options = ['Both', 'First', 'Last']
@@ -98,6 +98,7 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
                                                             QgsProcessing.TypeVectorLine))
 
         self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_SEGMENT_COUNT, self.tr('Number of segments')))
+        self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_TRACK_POINT_COUNT, self.tr('Number of track points')))
         self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_EQUAL_COORDINATE_COUNT,
                                                  self.tr('Number of segments which are not created because of equal '
                                                          'coordinates')))
@@ -134,4 +135,5 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
 
         return {self.OUTPUT: dest_id,
                 self.OUTPUT_SEGMENT_COUNT: layer.featureCount(),
-                self.OUTPUT_EQUAL_COORDINATE_COUNT: self.point_layer_reader.equal_coordintes}
+                self.OUTPUT_TRACK_POINT_COUNT: self.point_layer_reader.track_point_count,
+                self.OUTPUT_EQUAL_COORDINATE_COUNT: self.point_layer_reader.equal_coordinates}

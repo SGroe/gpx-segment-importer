@@ -61,6 +61,8 @@ class GpxFileReader:
         self.error_message = ''
 
         if calculate_motion_attributes:
+            self.attribute_definitions.append(DataTypeDefinition('_a_index', DataTypes.Integer, True, ''))
+            self.attribute_definitions.append(DataTypeDefinition('_b_index', DataTypes.Integer, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_distance', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_duration', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
@@ -85,6 +87,7 @@ class GpxFileReader:
             for track_segment in track.findall('gpx:trkseg', self.namespace):
                 self.track_segment_count += 1
                 prev_track_point = None
+                prev_track_point_index = -1
 
                 for track_point in track_segment.findall('gpx:trkpt', self.namespace):
                     self.track_point_count += 1
@@ -121,6 +124,8 @@ class GpxFileReader:
                             self.add_attributes(attributes, track_point, 'b_')
 
                         if calculate_motion_attributes:
+                            attributes['_a_index'] = prev_track_point_index
+                            attributes['_b_index'] = self.track_point_count - 1
                             attributes['_distance'] = GeomTools.distance(previous_point, new_point, crs)
 
                             time_a = DataTypes.create_date(prev_track_point.find('gpx:time', self.namespace).text)
@@ -137,6 +142,7 @@ class GpxFileReader:
                         vector_layer_builder.add_feature([previous_point, new_point], attributes)
 
                     prev_track_point = track_point
+                    prev_track_point_index = self.track_point_count - 1
 
         vector_layer = vector_layer_builder.save_layer(output_directory, overwrite)
         if vector_layer_builder.error_message != '':

@@ -12,7 +12,8 @@ class PointLayerReader:
     def __init__(self):
         self.attribute_definitions = list()
         self.error_message = ''
-        self.equal_coordintes = 0
+        self.equal_coordinates = 0
+        self.track_point_count = 0
 
     def get_table_data(self, point_layer):
         """ Reads the first GPX track point and create datatype definitions from the available attributes """
@@ -36,6 +37,8 @@ class PointLayerReader:
         self.error_message = ''
 
         if calculate_motion_attributes:
+            self.attribute_definitions.append(DataTypeDefinition('_a_index', DataTypes.Integer, True, ''))
+            self.attribute_definitions.append(DataTypeDefinition('_b_index', DataTypes.Integer, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_distance', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_duration', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
@@ -45,13 +48,17 @@ class PointLayerReader:
                                                  attribute_select, point_layer.sourceCrs())
 
         prev_track_point = None
-        self.equal_coordintes = 0
+        prev_track_point_index = -1
+        self.equal_coordinates = 0
+        self.track_point_count = 0
 
         for track_point in point_layer.getFeatures():
+            self.track_point_count += 1
+
             if prev_track_point is not None:
                 if GeomTools.is_equal_coordinate(prev_track_point.geometry().asPoint(),
                                                  track_point.geometry().asPoint()):
-                    self.equal_coordintes += 1
+                    self.equal_coordinates += 1
                     continue
 
                 # add a feature with first/last/both attributes
@@ -65,6 +72,8 @@ class PointLayerReader:
                     self.add_attributes(attributes, track_point, 'b_')
 
                 if calculate_motion_attributes:
+                    attributes['_a_index'] = prev_track_point_index
+                    attributes['_b_index'] = self.track_point_count - 1
                     attributes['_distance'] = GeomTools.distance(prev_track_point.geometry().constGet(),
                                                                  track_point.geometry().constGet(),
                                                                  point_layer.sourceCrs())
@@ -95,6 +104,7 @@ class PointLayerReader:
                                                   track_point.geometry().constGet()], attributes)
 
             prev_track_point = track_point
+            prev_track_point_index = self.track_point_count - 1
 
         vector_layer = vector_layer_builder.save_layer(None, False)
         if vector_layer_builder.error_message != '':
