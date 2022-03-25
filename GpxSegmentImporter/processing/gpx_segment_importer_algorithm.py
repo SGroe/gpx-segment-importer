@@ -1,11 +1,13 @@
 # qgis imports
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
+# PyQt imports
+from qgis.PyQt.QtGui import QIcon
 # from qgis.PyQt.QtCore import QCoreApplication
 from qgis.core import (QgsProcessingParameterBoolean, QgsProcessingParameterEnum, QgsProcessingParameterFile,
                        QgsProcessingParameterFeatureSink, QgsProcessing, QgsFeatureSink, QgsProcessingOutputNumber,
                        QgsWkbTypes)
 # plugin
-from gpx_file_reader import GpxFileReader
+from ..core.gpx_file_reader import GpxFileReader
 
 
 class GpxSegmentImporterAlgorithm(QgisAlgorithm):
@@ -56,6 +58,11 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
 
     def group(self):
         return self.alg_group
+
+    def icon(self):
+        """We return the default icon.
+        """
+        return QIcon(':/plugins/GpxSegmentImporter/icon.svg')
 
     def initAlgorithm(self, configuration=None):
         """Here we define the inputs and output of the algorithm, along

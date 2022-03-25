@@ -4,7 +4,7 @@ from qgis.core import (QgsProcessingParameterBoolean, QgsProcessingParameterEnum
                        QgsProcessingParameterFeatureSource, QgsProcessingParameterFeatureSink, QgsWkbTypes,
                        QgsProcessingParameterField, QgsProcessingOutputNumber)
 # plugin
-from point_layer_reader import PointLayerReader
+from ..core.point_layer_reader import PointLayerReader
 
 
 class TrackSegmentCreatorAlgorithm(QgisAlgorithm):

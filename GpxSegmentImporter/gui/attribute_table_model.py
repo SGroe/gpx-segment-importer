@@ -1,6 +1,5 @@
-import operator
 from PyQt5.QtCore import Qt, QAbstractTableModel
-from .datatype_definition import DataTypes
+from ..core.datatype_definition import DataTypes
 
 
 class AttributeTableModel(QAbstractTableModel):

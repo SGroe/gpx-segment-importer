@@ -28,8 +28,8 @@ __copyright__ = '(C) 2018 by Salzburg Research'
 
 __revision__ = '$Format:%H$'
 
-# PyQt5 imports
-from qgis.pyqt.QtGui import QIcon
+# PyQt imports
+from qgis.PyQt.QtGui import QIcon
 # qgis imports
 from qgis.core import QgsProcessingProvider
 # from processing.core.ProcessingConfig import Setting, ProcessingConfig

@@ -26,7 +26,7 @@ import os
 from PyQt5 import QtWidgets, uic
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'gpx_segment_importer_dialog_base.ui'))
+    os.path.dirname(__file__), '../ui/gpx_segment_importer_dialog_base.ui'))
 
 
 class GpxSegmentImporterDialog(QtWidgets.QDialog, FORM_CLASS):

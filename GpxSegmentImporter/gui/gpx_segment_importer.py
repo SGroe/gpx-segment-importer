@@ -21,18 +21,17 @@
  ***************************************************************************/
 """
 # Initialize Qt resources from file resources.py
-from .resources import *
-# PyQt5 imports
-from PyQt5.QtCore import QSettings, QTranslator, QCoreApplication
-from PyQt5.QtGui import QIcon
-from PyQt5 import QtWidgets
+# PyQt imports
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt import QtWidgets
 # QGIS imports
 from qgis.core import Qgis, QgsProject, QgsApplication
 # Plugin classes
-from .gpx_file_reader import GpxFileReader
+from ..core.gpx_file_reader import GpxFileReader
 from .attribute_table_model import AttributeTableModel
 from .datatype_combo_delegate import DatatypeComboDelegate
-from .GpxSegmentImporter.processing.gpx_segment_importer_provider import GpxSegmentImporterProvider
+from ..processing.gpx_segment_importer_provider import GpxSegmentImporterProvider
 # dialog
 from .gpx_segment_importer_dialog import GpxSegmentImporterDialog
 # other
@@ -58,7 +57,7 @@ class GpxSegmentImporter:
         # initialize locale
         locale_path = os.path.join(
             self.plugin_dir,
-            'i18n',
+            '../i18n',
             'gpx_segment_importer_{}.qm'.format(QSettings().value('locale/userLocale')[0:2]))
 
         if os.path.exists(locale_path):
@@ -84,9 +83,6 @@ class GpxSegmentImporter:
         self.output_directory_default = QSettings().value('gpx-segment-importer/default_output_dir', '')
         self.gpx_file_reader = GpxFileReader()
 
-        # process
-        self.provider = GpxSegmentImporterProvider()
-
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -101,98 +97,6 @@ class GpxSegmentImporter:
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('gpx_segment_importer', message)
-
-    def add_action(self, icon_path, text, callback, enabled_flag=True, add_to_menu=True, add_to_toolbar=True,
-                   status_tip=None, whats_this=None, parent=None):
-        """Add a toolbar icon to the toolbar.
-
-        :param icon_path: Path to the icon for this action. Can be a resource
-            path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
-        :type icon_path: str
-
-        :param text: Text that should be shown in menu items for this action.
-        :type text: str
-
-        :param callback: Function to be called when the action is triggered.
-        :type callback: function
-
-        :param enabled_flag: A flag indicating if the action should be enabled
-            by default. Defaults to True.
-        :type enabled_flag: bool
-
-        :param add_to_menu: Flag indicating whether the action should also
-            be added to the menu. Defaults to True.
-        :type add_to_menu: bool
-
-        :param add_to_toolbar: Flag indicating whether the action should also
-            be added to the toolbar. Defaults to True.
-        :type add_to_toolbar: bool
-
-        :param status_tip: Optional text to show in a popup when mouse pointer
-            hovers over the action.
-        :type status_tip: str
-
-        :param parent: Parent widget for the new action. Defaults None.
-        :type parent: QWidget
-
-        :param whats_this: Optional text to show in the status bar when the
-            mouse pointer hovers over the action.
-
-        :returns: The action that was created. Note that the action is also
-            added to self.actions list.
-        :rtype: QAction
-        """
-
-        # Create the dialog (after translation) and keep reference
-        # self.dlg = GpxSegmentImporterDialog()
-
-        icon = QIcon(icon_path)
-        action = QtWidgets.QAction(icon, text, parent)
-        action.triggered.connect(callback)
-        action.setEnabled(enabled_flag)
-
-        if status_tip is not None:
-            action.setStatusTip(status_tip)
-
-        if whats_this is not None:
-            action.setWhatsThis(whats_this)
-
-        if add_to_toolbar:
-            self.toolbar.addAction(action)
-
-        if add_to_menu:
-            self.iface.addPluginToMenu(
-                self.menu,
-                action)
-
-        self.actions.append(action)
-
-        return action
-
-    def initGui(self):
-        """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
-        icon_path = ':/plugins/GpxSegmentImporter/icon.svg'
-        self.add_action(
-            icon_path,
-            text=self.tr(u'GPX Segment Importer'),
-            callback=self.run,
-            parent=self.iface.mainWindow())
-
-        QgsApplication.processingRegistry().addProvider(self.provider)
-
-    def unload(self):
-        """Removes the plugin menu item and icon from QGIS GUI."""
-        for action in self.actions:
-            self.iface.removePluginMenu(
-                self.tr(u'&GpxSegmentImporter'),
-                action)
-            self.iface.removeToolBarIcon(action)
-        # remove the toolbar
-        del self.toolbar
-
-        # remove provider
-        QgsApplication.processingRegistry().removeProvider(self.provider)
 
     def select_gpx_files(self):
         # Get GPX files

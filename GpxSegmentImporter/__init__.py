@@ -31,5 +31,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .gpx_segment_importer import GpxSegmentImporter
+    from GpxSegmentImporter.gpx_segment_importer import GpxSegmentImporter
     return GpxSegmentImporter(iface)
