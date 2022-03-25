@@ -32,7 +32,7 @@ from qgis.core import Qgis, QgsProject, QgsApplication
 from .gpx_file_reader import GpxFileReader
 from .attribute_table_model import AttributeTableModel
 from .datatype_combo_delegate import DatatypeComboDelegate
-from .gpx_segment_importer_provider import GpxSegmentImporterProvider
+from .GpxSegmentImporter.processing.gpx_segment_importer_provider import GpxSegmentImporterProvider
 # dialog
 from .gpx_segment_importer_dialog import GpxSegmentImporterDialog
 # other

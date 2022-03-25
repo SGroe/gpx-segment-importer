@@ -5,7 +5,7 @@ from qgis.core import (QgsProcessingParameterBoolean, QgsProcessingParameterEnum
                        QgsProcessingParameterFeatureSink, QgsProcessing, QgsFeatureSink, QgsProcessingOutputNumber,
                        QgsWkbTypes)
 # plugin
-from .gpx_file_reader import GpxFileReader
+from gpx_file_reader import GpxFileReader
 
 
 class GpxSegmentImporterAlgorithm(QgisAlgorithm):
