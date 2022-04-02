@@ -10,9 +10,9 @@
 name=GPX Segment Importer
 qgisMinimumVersion=3.0
 description=This plugin imports an GPX file and creates short line segments between the track points
-version=2.5
-author=Simon Gröchenig @ Salzburg Research
-email=simon.groechenig@salzburgresearch.at
+version=3.0
+author=Simon Gröchenig
+email=simon@sgroe.at
 
 about=This plugin imports an GPX file and creates short line segments between the track points. Features include:
     * Available as QGIS dialog in toolbar and also as QGIS algorithm for usage in processing
@@ -28,43 +28,8 @@ repository=https://github.com/SGroe/gpx-segment-importer
 
 # Recommended items:
 
-changelog=2.5 (2019-12-20)
-    - Add track point indices to motion attributes
-    - Process all track segments if more than 1 is available in GPX file
-    - [Bug] Set duration to 0 instead of None if timestamps are equal
-    2.4 (2019-08-12)
-    - Create 3D-geometries if elevation tag is available in GPX file or track layer
-    - Calculate elevation_diff attribute if elevation tag is available in GPX file or track layer
-    2.3 (2019-03-04)
-    - Iterate over all track points to find attributes
-    - Use algorithm output to show number of created and skipped segments
-    - German translation
-    2.2 (2018-11-27)
-    - Add new algorithm 'Track segment creator'
-    - Add warning if track points with equal coordinates prevent creating segments
-    - Remove option to use EPSG:4326
-    - Deprecate 'GPX segment importer' dialog (use algorithm instead)
-    - Bug fixes
-    2.1 (2018-02-20)
-    - Importer added as QgisAlgorithm to enable usage in processing
-    - QGIS3 API adjustments related to QMessageBar
-    2.0 -qgis3 (2018-02-01)
-    - Support for QGIS3
-    - Use of message and progress bar
-    1.4 -qgis2 (2018-02-01)
-    - Use of message and progress bar
-    1.3 (2018-01-15)
-    - Write track layer in GeoPackage instead of ESRI Shapefile
-    - Store last input/output directory in QGIS settings
-    - Optionally calculate duration between track points
-    1.2 (2017-12-21)
-    - Option to add attributes from start/end/both track point(s)
-    - Optionally calculate distance and speed between track points
-    1.1 (2017-12-19)
-    - New SVG icon
-    - Improved boolean handling
-    1.0 (2017-12-18)
-    - Initial release
+changelog=3.0 (future)
+    - Major refactoring
 
 # Tags are comma separated with spaces allowed
 tags=gpx,gps,segment,importer
