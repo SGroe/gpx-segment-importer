@@ -1,7 +1,7 @@
 # Initialize Qt resources from file resources.py
 from qgis.core import (QgsVectorLayer, QgsField, QgsGeometry, QgsFeature, QgsPointXY, QgsVectorLayer)
 from .datatype_definition import (DataTypeDefinition, DataTypes)
-from .gpx_feature_builder import GpxFeatureBuilder
+from .segment_layer_builder import SegmentLayerBuilder
 from .geom_tools import GeomTools
 from PyQt5.QtCore import QDateTime
 
@@ -44,8 +44,8 @@ class PointLayerReader:
             self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
             self.attribute_definitions.append(DataTypeDefinition('_elevation_diff', DataTypes.Double, True, ''))
 
-        vector_layer_builder = GpxFeatureBuilder(point_layer.sourceName(), self.attribute_definitions,
-                                                 attribute_select, point_layer.sourceCrs())
+        vector_layer_builder = SegmentLayerBuilder(point_layer.sourceName(), self.attribute_definitions,
+                                                   attribute_select, point_layer.sourceCrs())
 
         prev_track_point = None
         prev_track_point_index = -1

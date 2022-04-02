@@ -2,7 +2,7 @@
 from xml.etree import ElementTree
 from qgis.core import (QgsPoint, QgsCoordinateReferenceSystem)
 from .datatype_definition import (DataTypeDefinition, DataTypes)
-from .gpx_feature_builder import GpxFeatureBuilder
+from .segment_layer_builder import SegmentLayerBuilder
 from .geom_tools import GeomTools
 import os
 
@@ -73,8 +73,8 @@ class GpxFileReader:
 
         crs = QgsCoordinateReferenceSystem('EPSG:4326') if use_wgs84 else None
 
-        vector_layer_builder = GpxFeatureBuilder(os.path.basename(file_path), self.attribute_definitions,
-                                                 attribute_select, crs)
+        vector_layer_builder = SegmentLayerBuilder(os.path.basename(file_path), self.attribute_definitions,
+                                                   attribute_select, crs)
 
         self.equal_coordinates = 0
         self.track_count = 0

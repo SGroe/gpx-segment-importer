@@ -6,7 +6,7 @@ from .vector_file_writer import VectorFileWriter
 import os
 
 
-class GpxFeatureBuilder:
+class SegmentLayerBuilder:
     """ Builds gpx layers and features """
 
     def __init__(self, layer_name, attribute_definitions, attribute_select='Last', crs=None):
