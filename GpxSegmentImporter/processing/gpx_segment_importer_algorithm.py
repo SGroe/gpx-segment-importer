@@ -1,16 +1,16 @@
-# qgis imports
-from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
+import os
 # PyQt imports
+from qgis.PyQt.QtCore import QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-# from qgis.PyQt.QtCore import QCoreApplication
+# qgis imports
 from qgis.core import (QgsProcessingParameterBoolean, QgsProcessingParameterEnum, QgsProcessingParameterFile,
                        QgsProcessingParameterFeatureSink, QgsProcessing, QgsFeatureSink, QgsProcessingOutputNumber,
-                       QgsWkbTypes)
+                       QgsWkbTypes, QgsProcessingAlgorithm)
 # plugin
 from ..core.gpx_file_reader import GpxFileReader
 
 
-class GpxSegmentImporterAlgorithm(QgisAlgorithm):
+class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
     """This is an example algorithm that takes a vector layer and
     creates a new one just with just those features of the input
     layer that are selected.
@@ -33,6 +33,7 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
         self.alg_name = self.tr("Import GPX segments")
         self.alg_display_name = self.tr("Import GPX segments")
         self.alg_group = self.tr("GPX segment tools")
+        self.alg_group_id = "gpx_segment_tools"
 
         self.INPUT = 'INPUT'
         self.ATTRIBUTE_MODE = 'ATTRIBUTE_MODE'
@@ -50,19 +51,36 @@ class GpxSegmentImporterAlgorithm(QgisAlgorithm):
 
         self.gpx_file_reader = GpxFileReader()
 
+    def createInstance(self):
+        return GpxSegmentImporterAlgorithm()
+
     def name(self):
         return self.alg_name
 
     def displayName(self):
         return self.alg_display_name
 
+    def groupId(self):
+        return self.alg_group_id
+
     def group(self):
         return self.alg_group
 
     def icon(self):
-        """We return the default icon.
         """
-        return QIcon(':/plugins/GpxSegmentImporter/icon.svg')
+        Returns the icon
+        """
+        path = os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            'icon.svg')
+        return QIcon(path)
+
+    def tr(self, string):
+        """
+        Returns a translatable string with the self.tr() function.
+        """
+        return QCoreApplication.translate('Processing', string)
 
     def initAlgorithm(self, configuration=None):
         """Here we define the inputs and output of the algorithm, along

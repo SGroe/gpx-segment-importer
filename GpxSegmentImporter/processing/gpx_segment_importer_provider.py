@@ -28,11 +28,11 @@ __copyright__ = '(C) 2018 by Salzburg Research'
 
 __revision__ = '$Format:%H$'
 
+import os
 # PyQt imports
 from qgis.PyQt.QtGui import QIcon
 # qgis imports
 from qgis.core import QgsProcessingProvider
-# from processing.core.ProcessingConfig import Setting, ProcessingConfig
 # plugin imports
 from .gpx_segment_importer_algorithm import GpxSegmentImporterAlgorithm
 from .track_segment_creator_algorithm import TrackSegmentCreatorAlgorithm
@@ -57,9 +57,14 @@ class GpxSegmentImporterProvider(QgsProcessingProvider):
         return 'GPX Segment Importer'
 
     def icon(self):
-        """We return the default icon.
         """
-        return QIcon(':/plugins/GpxSegmentImporter/icon.svg')
+        Returns the icon
+        """
+        path = os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            'icon.svg')
+        return QIcon(path)
         # return QgsProcessingProvider.icon(self)
 
     # def initializeSettings(self):

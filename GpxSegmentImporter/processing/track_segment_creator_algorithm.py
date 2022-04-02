@@ -1,13 +1,16 @@
+import os
+# PyQt imports
+from qgis.PyQt.QtCore import QCoreApplication
+from qgis.PyQt.QtGui import QIcon
 # qgis imports
-from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 from qgis.core import (QgsProcessingParameterBoolean, QgsProcessingParameterEnum, QgsProcessing, QgsFeatureSink,
                        QgsProcessingParameterFeatureSource, QgsProcessingParameterFeatureSink, QgsWkbTypes,
-                       QgsProcessingParameterField, QgsProcessingOutputNumber)
+                       QgsProcessingParameterField, QgsProcessingOutputNumber, QgsProcessingAlgorithm)
 # plugin
 from ..core.point_layer_reader import PointLayerReader
 
 
-class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
+class TrackSegmentCreatorAlgorithm(QgsProcessingAlgorithm):
     """This is an example algorithm that takes a vector layer and
     creates a new one just with just those features of the input
     layer that are selected.
@@ -30,6 +33,7 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
         self.alg_name = self.tr("Create track segments")
         self.alg_display_name = self.tr("Create track segments")
         self.alg_group = self.tr("GPX segment tools")
+        self.alg_group_id = "gpx_segment_tools"
 
         self.INPUT = 'INPUT'
         self.TIMESTAMP_FIELD = 'TIMESTAMP_FIELD'
@@ -47,14 +51,36 @@ class TrackSegmentCreatorAlgorithm(QgisAlgorithm):
 
         self.point_layer_reader = PointLayerReader()
 
+    def createInstance(self):
+        return TrackSegmentCreatorAlgorithm()
+
     def name(self):
         return self.alg_name
 
     def displayName(self):
         return self.alg_display_name
 
+    def groupId(self):
+        return self.alg_group_id
+
     def group(self):
         return self.alg_group
+
+    def icon(self):
+        """
+        Returns the icon
+        """
+        path = os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            'icon.svg')
+        return QIcon(path)
+
+    def tr(self, string):
+        """
+        Returns a translatable string with the self.tr() function.
+        """
+        return QCoreApplication.translate('Processing', string)
 
     def initAlgorithm(self, config=None):
         """Here we define the inputs and output of the algorithm, along

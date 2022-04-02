@@ -53,7 +53,7 @@ class GpxSegmentImporter:
         # initialize locale
         locale_path = os.path.join(
             self.plugin_dir,
-            '../../i18n',
+            'i18n',
             'gpx_segment_importer_{}.qm'.format(QSettings().value('locale/userLocale')[0:2]))
 
         if os.path.exists(locale_path):
@@ -160,7 +160,9 @@ class GpxSegmentImporter:
         self.toolbar = self.iface.addToolBar(u'GPX Segment Toolbar')
         self.toolbar.setObjectName(u'GPX Segment Toolbar')
 
-        icon_path = ':/plugins/GpxSegmentImporter/icon.svg'
+        icon_path = os.path.join(
+            os.path.dirname(__file__),
+            'icon.svg')
         self.add_action(
             icon_path,
             text=self.tr(u'GPX Segment Importer'),
