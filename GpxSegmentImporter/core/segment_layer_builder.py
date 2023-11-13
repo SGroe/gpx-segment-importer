@@ -1,17 +1,26 @@
-from qgis.PyQt.QtCore import QVariant
-# Initialize Qt resources from file resources.py
-from qgis.core import QgsVectorLayer, QgsField, QgsFeature, QgsGeometry
-from .datatype_definition import DataTypes
-from .vector_file_writer import VectorFileWriter
 import os
+# PyQt imports
+from qgis.PyQt.QtCore import QVariant
+# QGIS imports
+from qgis.core import QgsVectorLayer, QgsField, QgsFeature, QgsGeometry
+# Plugin imports
+from .datatype_definition import (DataTypeDefinition, DataTypes)
+from .vector_file_writer import VectorFileWriter
 
 
 class SegmentLayerBuilder:
-    """ Builds gpx layers and features """
+    """ Builds segment layers and features """
 
-    def __init__(self, layer_name, attribute_definitions, attribute_select='Last', crs=None):
+    def __init__(self):
+        self.attribute_definitions = list()
         self.error_message = ''
+        self.equal_coordinates = 0
+        self.track_point_count = 0
 
+        self.vector_layer = None
+        self.data_provider = None
+
+    def initialize_layer(self, layer_name, attribute_select='Last', crs=None):
         layer_definition: str = 'LineString'
         if crs is not None:
             layer_definition = layer_definition + "?crs=epsg:" + str(crs.postgisSrid())
@@ -22,7 +31,7 @@ class SegmentLayerBuilder:
         # Enter editing mode
         self.vector_layer.startEditing()
         attributes = list()
-        for attribute in attribute_definitions:
+        for attribute in self.attribute_definitions:
             if attribute.selected:  # select attribute [boolean]
                 for attribute_select_option in ['First', 'Last']:
                     if attribute_select_option != attribute_select and attribute_select != 'Both':
@@ -52,6 +61,20 @@ class SegmentLayerBuilder:
         self.data_provider.addAttributes(attributes)
         self.vector_layer.updateFields()
 
+    def initialize_motion_attributes(self):
+        self.attribute_definitions.append(DataTypeDefinition('_a_index', DataTypes.Integer, True, ''))
+        self.attribute_definitions.append(DataTypeDefinition('_b_index', DataTypes.Integer, True, ''))
+        self.attribute_definitions.append(DataTypeDefinition('_distance', DataTypes.Double, True, ''))
+        self.attribute_definitions.append(DataTypeDefinition('_duration', DataTypes.Double, True, ''))
+        self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
+        self.attribute_definitions.append(DataTypeDefinition('_elevation_diff', DataTypes.Double, True, ''))
+
+    def get_attribute_definition(self, key):
+        for attribute in self.attribute_definitions:
+            if key == attribute.attribute_key:
+                return attribute
+        return None
+
     def add_feature(self, line_coordinates, attributes):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPolyline(line_coordinates))
@@ -80,10 +103,10 @@ class SegmentLayerBuilder:
                     if output_file_path is not None:
                         return QgsVectorLayer(output_file_path, os.path.basename(output_file_path), 'ogr')
                     else:
-                        self.error_message = 'Writing vector layer failed...'
+                        self.error_message = 'Writing vector layer failed...'  # throw exception
                         return None
                 else:
-                    self.error_message = 'Cannot find output directory'
+                    self.error_message = 'Cannot find output directory'  # throw exception
                     return None
 
         return self.vector_layer

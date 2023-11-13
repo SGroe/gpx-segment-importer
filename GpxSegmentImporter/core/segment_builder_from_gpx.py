@@ -1,23 +1,22 @@
-# Initialize Qt resources from file resources.py
+
+import os
 from xml.etree import ElementTree
+# QGIS imports
 from qgis.core import (QgsPoint, QgsCoordinateReferenceSystem)
+# Plugin imports
 from .datatype_definition import (DataTypeDefinition, DataTypes)
 from .segment_layer_builder import SegmentLayerBuilder
 from .geom_tools import GeomTools
-import os
 
 
-class GpxFileReader:
+class SegmentBuilderFromGpx(SegmentLayerBuilder):
     """ Reads gpx files and assembles vector layers """
 
     def __init__(self):
-        self.attribute_definitions = list()
+        super().__init__()
         self.namespace = None
-        self.error_message = ''
         self.track_count = 0
         self.track_segment_count = 0
-        self.track_point_count = 0
-        self.equal_coordinates = 0
 
     def get_table_data(self, file_path):
         """ Reads the first GPX track point and create datatype definitions from the available attributes """
@@ -61,20 +60,14 @@ class GpxFileReader:
         self.error_message = ''
 
         if calculate_motion_attributes:
-            self.attribute_definitions.append(DataTypeDefinition('_a_index', DataTypes.Integer, True, ''))
-            self.attribute_definitions.append(DataTypeDefinition('_b_index', DataTypes.Integer, True, ''))
-            self.attribute_definitions.append(DataTypeDefinition('_distance', DataTypes.Double, True, ''))
-            self.attribute_definitions.append(DataTypeDefinition('_duration', DataTypes.Double, True, ''))
-            self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
-            self.attribute_definitions.append(DataTypeDefinition('_elevation_diff', DataTypes.Double, True, ''))
+            self.initialize_motion_attributes()
 
         tree = ElementTree.parse(file_path)
         root = tree.getroot()
 
         crs = QgsCoordinateReferenceSystem('EPSG:4326') if use_wgs84 else None
 
-        vector_layer_builder = SegmentLayerBuilder(os.path.basename(file_path), self.attribute_definitions,
-                                                   attribute_select, crs)
+        self.initialize_layer(os.path.basename(file_path), attribute_select, crs)
 
         self.equal_coordinates = 0
         self.track_count = 0
@@ -139,14 +132,13 @@ class GpxFileReader:
                             if elevation_a is not None or elevation_b is not None:
                                 attributes['_elevation_diff'] = elevation_b - elevation_a
 
-                        vector_layer_builder.add_feature([previous_point, new_point], attributes)
+                        self.add_feature([previous_point, new_point], attributes)
 
                     prev_track_point = track_point
                     prev_track_point_index = self.track_point_count - 1
 
-        vector_layer = vector_layer_builder.save_layer(output_directory, overwrite)
-        if vector_layer_builder.error_message != '':
-            self.error_message = vector_layer_builder.error_message
+        vector_layer = self.save_layer(output_directory, overwrite)
+        if self.error_message != '':
             print(self.error_message)
 
         return vector_layer
@@ -185,12 +177,12 @@ class GpxFileReader:
             try:
                 # check if attribute value is available
                 if element.get('key') is not None:
-                    attribute = self._get_attribute_definition(element.get('key'))
+                    attribute = self.get_attribute_definition(element.get('key'))
                     if attribute is None:
                         return
                     attribute.example_value = element.get('value')
                 else:
-                    attribute = self._get_attribute_definition(self.normalize(element.tag))
+                    attribute = self.get_attribute_definition(self.normalize(element.tag))
                     if attribute is None:
                         return
                     attribute.example_value = element.text
@@ -207,12 +199,6 @@ class GpxFileReader:
                 # print('KeyError while reading attribute ' + self.normalize(extension.tag))
         for child in element:
             self.add_attributes(attributes, child, key_prefix)
-
-    def _get_attribute_definition(self, key):
-        for attribute in self.attribute_definitions:
-            if key == attribute.attribute_key:
-                return attribute
-        return None
 
     @staticmethod
     def normalize(name):

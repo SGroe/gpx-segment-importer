@@ -1,51 +1,33 @@
-# Initialize Qt resources from file resources.py
-from qgis.core import (QgsVectorLayer, QgsField, QgsGeometry, QgsFeature, QgsPointXY, QgsVectorLayer)
+# PyQt imports
+from qgis.PyQt.QtCore import QDateTime
+# Plugin imports
 from .datatype_definition import (DataTypeDefinition, DataTypes)
 from .segment_layer_builder import SegmentLayerBuilder
 from .geom_tools import GeomTools
-from PyQt5.QtCore import QDateTime
 
 
-class PointLayerReader:
-    """ Reads gpx files and assembles vector layers """
+class SegmentBuilderFromPoints(SegmentLayerBuilder):
+    """ Reads point layers and assembles segment layers """
 
-    def __init__(self):
-        self.attribute_definitions = list()
-        self.error_message = ''
-        self.equal_coordinates = 0
-        self.track_point_count = 0
+    def __init__(self, ):
+        super().__init__()
 
-    def get_table_data(self, point_layer):
-        """ Reads the first GPX track point and create datatype definitions from the available attributes """
-
-        self.attribute_definitions = list()
-        self.error_message = ''
-
-        for track_point in point_layer.getFeatures():
-            self.detect_attributes(track_point)
-            break
-
-        return True if self.error_message == '' else False
-
-    def import_gpx_file(self, point_layer, timestamp_field, timestamp_format, attribute_select="Last",
-                        calculate_motion_attributes=False):
-        """ Imports the data from the GPX file and create the vector layer """
+    def read_segments(self, point_layer, timestamp_field, timestamp_format, attribute_select="Last",
+                      calculate_motion_attributes=False):
+        """
+        Imports the data from the source layer and create the vector layer
+        """
 
         if len(self.attribute_definitions) == 0:
-            self.get_table_data(point_layer)
+            self.create_attribute_definitions(point_layer)
 
         self.error_message = ''
 
         if calculate_motion_attributes:
-            self.attribute_definitions.append(DataTypeDefinition('_a_index', DataTypes.Integer, True, ''))
-            self.attribute_definitions.append(DataTypeDefinition('_b_index', DataTypes.Integer, True, ''))
-            self.attribute_definitions.append(DataTypeDefinition('_distance', DataTypes.Double, True, ''))
-            self.attribute_definitions.append(DataTypeDefinition('_duration', DataTypes.Double, True, ''))
-            self.attribute_definitions.append(DataTypeDefinition('_speed', DataTypes.Double, True, ''))
-            self.attribute_definitions.append(DataTypeDefinition('_elevation_diff', DataTypes.Double, True, ''))
+            self.initialize_motion_attributes()
 
-        vector_layer_builder = SegmentLayerBuilder(point_layer.sourceName(), self.attribute_definitions,
-                                                   attribute_select, point_layer.sourceCrs())
+        vector_layer_builder = self.initialize_layer(point_layer.sourceName(), attribute_select,
+                                                     point_layer.sourceCrs())
 
         prev_track_point = None
         prev_track_point_index = -1
@@ -113,22 +95,29 @@ class PointLayerReader:
 
         return vector_layer
 
-    def detect_attributes(self, track_point):
-        """ Either detects the attribute or recursively finds child elements """
+    def create_attribute_definitions(self, point_layer):
+        """ Reads the first track point and create datatype definitions from the available attributes """
 
-        for field in track_point.fields():
-            self.attribute_definitions.append(DataTypeDefinition(
-                field.name(),
-                # field.typeName(),
-                DataTypes.detect_data_type(track_point[field.name()]),
-                track_point[field.name()],
-                track_point[field.name()]))
+        self.attribute_definitions = list()
+        self.error_message = ''
+
+        if len(point_layer.getFeatures()) > 0:
+            track_point = point_layer.getFeatures()[0]
+            for field in track_point.fields():
+                self.attribute_definitions.append(DataTypeDefinition(
+                    field.name(),
+                    # field.typeName(),
+                    DataTypes.detect_data_type(track_point[field.name()]),
+                    track_point[field.name()],
+                    track_point[field.name()]))
+
+        return True if self.error_message == '' else False
 
     def add_attributes(self, attributes, track_point, key_prefix):
         """ Reads and adds attributes to the feature """
 
         for field in track_point.fields():
-            attribute = self._get_attribute_definition(field.name())
+            attribute = self.get_attribute_definition(field.name())
             if attribute is None:
                 return
             attribute.example_value = track_point[field.name()]
@@ -139,9 +128,3 @@ class PointLayerReader:
                 attributes[key_prefix + attribute.attribute_key_modified] = attribute.example_value
             elif attribute.datatype is DataTypes.Boolean and DataTypes.value_is_boolean(attribute.example_value):
                 attributes[key_prefix + attribute.attribute_key_modified] = str(attribute.example_value)
-
-    def _get_attribute_definition(self, key):
-        for attribute in self.attribute_definitions:
-            if key == attribute.attribute_key:
-                return attribute
-        return None
