@@ -28,7 +28,7 @@ from qgis.PyQt import QtWidgets
 # QGIS imports
 from qgis.core import Qgis, QgsProject, QgsApplication
 # Plugin classes
-from ..core.gpx_file_reader import GpxFileReader
+from ..core.segment_builder_from_gpx import SegmentBuilderFromGpx
 from .attribute_table_model import AttributeTableModel
 from .datatype_combo_delegate import DatatypeComboDelegate
 from ..processing.gpx_segment_importer_provider import GpxSegmentImporterProvider
@@ -81,7 +81,7 @@ class GpxSegmentImporter:
         self.output_directory = None
         self.gpx_directory_default = QSettings().value('gpx-segment-importer/default_input_dir', '')
         self.output_directory_default = QSettings().value('gpx-segment-importer/default_output_dir', '')
-        self.gpx_file_reader = GpxFileReader()
+        self.gpx_file_reader = SegmentBuilderFromGpx()
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
