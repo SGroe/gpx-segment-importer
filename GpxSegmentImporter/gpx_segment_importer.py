@@ -179,7 +179,8 @@ class GpxSegmentImporter:
                 action)
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
-        del self.toolbar
+        self.toolbar.deleteLater()
+        self.toolbar = None
 
         # remove provider
         QgsApplication.processingRegistry().removeProvider(self.provider)
