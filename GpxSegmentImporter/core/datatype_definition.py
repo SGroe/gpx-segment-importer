@@ -1,5 +1,6 @@
 from datetime import *
 import re
+from qgis.PyQt.QtCore import QDateTime
 
 
 class DataTypeDefinition:
@@ -109,6 +110,8 @@ class DataTypes:
             else:
                 return False
         elif type(value) is datetime:
+            return True
+        elif type(value) is QDateTime:
             return True
         else:
             return False

@@ -1,4 +1,6 @@
 # PyQt imports
+import datetime
+
 from qgis.PyQt.QtCore import QDateTime
 # Plugin imports
 from .datatype_definition import (DataTypeDefinition, DataTypes)
@@ -70,6 +72,9 @@ class SegmentBuilderFromPoints(SegmentLayerBuilder):
                         # time_b = time.localtime(track_point[timestamp_field].toMSecsSinceEpoch())
                         time_a = prev_track_point[timestamp_field]  # .toMSecsSinceEpoch()
                         time_b = track_point[timestamp_field]  # .toMSecsSinceEpoch()
+                    elif type(track_point[timestamp_field]) is datetime.datetime:
+                        time_a = prev_track_point[timestamp_field]
+                        time_b = track_point[timestamp_field]
                     elif type(track_point[timestamp_field]) is str:
                         time_a = DataTypes.create_date(prev_track_point[timestamp_field], timestamp_format)
                         time_b = DataTypes.create_date(track_point[timestamp_field], timestamp_format)
