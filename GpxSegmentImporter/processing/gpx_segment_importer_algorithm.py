@@ -7,7 +7,7 @@ from qgis.core import (QgsProcessingParameterBoolean, QgsProcessingParameterEnum
                        QgsProcessingParameterFeatureSink, QgsProcessing, QgsFeatureSink, QgsProcessingOutputNumber,
                        QgsWkbTypes, QgsProcessingAlgorithm)
 # plugin
-from ..core.gpx_file_reader import GpxFileReader
+from ..core.segment_builder_from_gpx import SegmentBuilderFromGpx
 
 
 class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
@@ -48,8 +48,9 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
 
         self.attribute_mode_options = ['Both', 'First', 'Last']
         self.attribute_mode_options_labels = [self.tr('Both'), self.tr('First'), self.tr('Last')]
+        self.motion_attribute_labels = ['a_index', 'b_index', 'distance', 'duration', 'speed', 'elevation_diff']
 
-        self.gpx_file_reader = GpxFileReader()
+        self.gpx_file_reader = SegmentBuilderFromGpx()
 
     def createInstance(self):
         return GpxSegmentImporterAlgorithm()
@@ -95,6 +96,9 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterBoolean(self.CALCULATE_MOTION_ATTRIBUTES,
                                                         self.tr('Calculate motion attributes between track points'),
                                                         True, True))
+        # self.addParameter(QgsProcessingParameterEnum(self.CALCULATE_MOTION_ATTRIBUTES,
+        #                                              self.tr('Calculate motion attributes between track points'),
+        #                                              self.motion_attribute_labels, True, [0, 1, 2, 3, 4, 5], False))
         # self.addParameter(QgsProcessingParameterBoolean(self.USE_EPSG_4326,
         #                                                 self.tr('Use \'EPSG:4326\' coordinate reference system'),
         #                                                 True, True))
@@ -115,7 +119,19 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
         pass
         input_file = self.parameterAsFile(parameters, self.INPUT, context)
         attribute_mode = self.attribute_mode_options[self.parameterAsInt(parameters, self.ATTRIBUTE_MODE, context)]
-        calculate_motion_attributes = self.parameterAsBool(parameters, self.CALCULATE_MOTION_ATTRIBUTES, context)
+        if isinstance(parameters[self.CALCULATE_MOTION_ATTRIBUTES], bool):
+            calculate_motion_attributes = self.parameterAsBool(parameters, self.CALCULATE_MOTION_ATTRIBUTES, context)
+            if calculate_motion_attributes:
+                calculate_motion_attributes_list = [1, 1, 1, 1, 1, 1]
+            else:
+                calculate_motion_attributes_list = [0, 0, 0, 0, 0, 0]
+        else:
+            calculate_motion_attributes_list = self.parameterAsEnums(parameters,
+                                                                     self.CALCULATE_MOTION_ATTRIBUTES,
+                                                                     context)
+            calculate_motion_attributes = True  # TODO
+        feedback.pushInfo("calculate_motion_attributes_list " + str(calculate_motion_attributes_list))
+
         use_epsg4326 = True  # self.parameterAsBool(parameters, self.USE_EPSG_4326, context)
 
         layer = self.gpx_file_reader.import_gpx_file(input_file, None, attribute_mode, use_epsg4326,
