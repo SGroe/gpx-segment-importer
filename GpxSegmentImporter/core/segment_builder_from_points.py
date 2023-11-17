@@ -12,8 +12,8 @@ class SegmentBuilderFromPoints(SegmentLayerBuilder):
     def __init__(self, ):
         super().__init__()
 
-    def read_segments(self, point_layer, timestamp_field, timestamp_format, attribute_select="Last",
-                      calculate_motion_attributes=False):
+    def build_segments(self, point_layer, timestamp_field, timestamp_format, attribute_select="Last",
+                       calculate_motion_attributes=False):
         """
         Imports the data from the source layer and create the vector layer
         """
@@ -26,8 +26,11 @@ class SegmentBuilderFromPoints(SegmentLayerBuilder):
         if calculate_motion_attributes:
             self.initialize_motion_attributes()
 
-        vector_layer_builder = self.initialize_layer(point_layer.sourceName(), attribute_select,
-                                                     point_layer.sourceCrs())
+        self.initialize_layer(
+            point_layer.sourceName(),
+            attribute_select,
+            point_layer.sourceCrs()
+        )
 
         prev_track_point = None
         prev_track_point_index = -1
@@ -73,27 +76,30 @@ class SegmentBuilderFromPoints(SegmentLayerBuilder):
 
                     if time_a is not None and time_b is not None:
                         attributes['_duration'] = GeomTools.calculate_duration(time_a, time_b)
-                        attributes['_speed'] = GeomTools.calculate_speed(time_a, time_b,
-                                                                         prev_track_point.geometry().constGet(),
-                                                                         track_point.geometry().constGet(),
-                                                                         point_layer.sourceCrs())
+                        attributes['_speed'] = GeomTools.calculate_speed(
+                            time_a, time_b,
+                            prev_track_point.geometry().constGet(),
+                            track_point.geometry().constGet(),
+                            point_layer.sourceCrs()
+                        )
                     if prev_track_point.geometry().constGet().is3D():
                         elevation_a = prev_track_point.geometry().vertexAt(0).z()
                         elevation_b = track_point.geometry().vertexAt(0).z()
                         attributes['_elevation_diff'] = elevation_b - elevation_a
 
-                vector_layer_builder.add_feature([prev_track_point.geometry().constGet(),
-                                                  track_point.geometry().constGet()], attributes)
+                self.add_feature([
+                    prev_track_point.geometry().constGet(),
+                    track_point.geometry().constGet()
+                ], attributes)
 
             prev_track_point = track_point
             prev_track_point_index = self.track_point_count - 1
 
-        vector_layer = vector_layer_builder.save_layer(None, False)
-        if vector_layer_builder.error_message != '':
-            self.error_message = vector_layer_builder.error_message
+        self.save_layer(None, False)
+        if self.error_message != '':
             print(self.error_message)
 
-        return vector_layer
+        return self.segment_layer
 
     def create_attribute_definitions(self, point_layer):
         """ Reads the first track point and create datatype definitions from the available attributes """
@@ -101,15 +107,16 @@ class SegmentBuilderFromPoints(SegmentLayerBuilder):
         self.attribute_definitions = list()
         self.error_message = ''
 
-        if len(point_layer.getFeatures()) > 0:
-            track_point = point_layer.getFeatures()[0]
-            for field in track_point.fields():
-                self.attribute_definitions.append(DataTypeDefinition(
-                    field.name(),
-                    # field.typeName(),
-                    DataTypes.detect_data_type(track_point[field.name()]),
-                    track_point[field.name()],
-                    track_point[field.name()]))
+        if point_layer.featureCount() > 0:
+            for feature in point_layer.getFeatures():
+                for field in feature.fields():
+                    self.attribute_definitions.append(DataTypeDefinition(
+                        field.name(),
+                        # field.typeName(),
+                        DataTypes.detect_data_type(feature[field.name()]),
+                        feature[field.name()],
+                        feature[field.name()]))
+                break  # only consider first feature
 
         return True if self.error_message == '' else False
 

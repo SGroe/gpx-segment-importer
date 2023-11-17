@@ -7,7 +7,7 @@ from qgis.core import (QgsProcessingParameterBoolean, QgsProcessingParameterEnum
                        QgsProcessingParameterFeatureSource, QgsProcessingParameterFeatureSink, QgsWkbTypes,
                        QgsProcessingParameterField, QgsProcessingOutputNumber, QgsProcessingAlgorithm)
 # plugin
-from ..core.point_layer_reader import PointLayerReader
+from ..core.segment_builder_from_points import SegmentBuilderFromPoints
 
 
 class TrackSegmentCreatorAlgorithm(QgsProcessingAlgorithm):
@@ -49,7 +49,7 @@ class TrackSegmentCreatorAlgorithm(QgsProcessingAlgorithm):
         self.attribute_mode_options = ['Both', 'First', 'Last']
         self.attribute_mode_options_labels = [self.tr('Both'), self.tr('First'), self.tr('Last')]
 
-        self.point_layer_reader = PointLayerReader()
+        self.point_layer_reader = SegmentBuilderFromPoints()
 
     def createInstance(self):
         return TrackSegmentCreatorAlgorithm()
@@ -137,8 +137,8 @@ class TrackSegmentCreatorAlgorithm(QgsProcessingAlgorithm):
         calculate_motion_attributes = self.parameterAsBool(parameters, self.CALCULATE_MOTION_ATTRIBUTES, context)
         # use_epsg4326 = self.parameterAsBool(parameters, self.USE_EPSG_4326, context)
 
-        layer = self.point_layer_reader.import_gpx_file(source, timestamp_field, "", attribute_mode,
-                                                        calculate_motion_attributes)
+        layer = self.point_layer_reader.build_segments(source, timestamp_field, "", attribute_mode,
+                                                       calculate_motion_attributes)
 
         if self.point_layer_reader.error_message != '':
             feedback.reportError(self.point_layer_reader.error_message, True)

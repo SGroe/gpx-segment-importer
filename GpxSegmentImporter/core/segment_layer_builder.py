@@ -17,7 +17,7 @@ class SegmentLayerBuilder:
         self.equal_coordinates = 0
         self.track_point_count = 0
 
-        self.vector_layer = None
+        self.segment_layer = None
         self.data_provider = None
 
     def initialize_layer(self, layer_name, attribute_select='Last', crs=None):
@@ -25,11 +25,11 @@ class SegmentLayerBuilder:
         if crs is not None:
             layer_definition = layer_definition + "?crs=epsg:" + str(crs.postgisSrid())
 
-        self.vector_layer = QgsVectorLayer(layer_definition, layer_name, "memory")
-        self.data_provider = self.vector_layer.dataProvider()
+        self.segment_layer = QgsVectorLayer(layer_definition, layer_name, "memory")
+        self.data_provider = self.segment_layer.dataProvider()
 
         # Enter editing mode
-        self.vector_layer.startEditing()
+        self.segment_layer.startEditing()
         attributes = list()
         for attribute in self.attribute_definitions:
             if attribute.selected:  # select attribute [boolean]
@@ -59,7 +59,7 @@ class SegmentLayerBuilder:
                     elif attribute.datatype == DataTypes.String:
                         attributes.append(QgsField(key, QVariant.String, 'String'))
         self.data_provider.addAttributes(attributes)
-        self.vector_layer.updateFields()
+        self.segment_layer.updateFields()
 
     def initialize_motion_attributes(self):
         self.attribute_definitions.append(DataTypeDefinition('_a_index', DataTypes.Integer, True, ''))
@@ -78,7 +78,7 @@ class SegmentLayerBuilder:
     def add_feature(self, line_coordinates, attributes):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPolyline(line_coordinates))
-        feature.setFields(self.vector_layer.fields(), True)
+        feature.setFields(self.segment_layer.fields(), True)
         for attribute_key in list(attributes.keys()):
             try:
                 feature.setAttribute(attribute_key, attributes[attribute_key])
@@ -87,18 +87,18 @@ class SegmentLayerBuilder:
         self.data_provider.addFeatures([feature])
 
     def save_layer(self, output_directory, overwrite):
-        self.vector_layer.commitChanges()
+        self.segment_layer.commitChanges()
 
         self.error_message = ''
 
-        if self.vector_layer.featureCount() > 0:
-            self.vector_layer.updateExtents()
+        if self.segment_layer.featureCount() > 0:
+            self.segment_layer.updateExtents()
 
             # Write vector layer to file
             if output_directory is not None:
                 if os.path.isdir(output_directory):
                     vector_layer_writer = VectorFileWriter(output_directory)
-                    output_file_path = vector_layer_writer.write(self.vector_layer, overwrite)
+                    output_file_path = vector_layer_writer.write(self.segment_layer, overwrite)
 
                     if output_file_path is not None:
                         return QgsVectorLayer(output_file_path, os.path.basename(output_file_path), 'ogr')
@@ -109,4 +109,4 @@ class SegmentLayerBuilder:
                     self.error_message = 'Cannot find output directory'  # throw exception
                     return None
 
-        return self.vector_layer
+        return self.segment_layer
