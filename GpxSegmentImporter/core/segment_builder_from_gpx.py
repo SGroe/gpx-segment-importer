@@ -189,7 +189,7 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
 
                 if attribute.datatype is DataTypes.Integer and DataTypes.value_is_int(attribute.example_value) or \
                         attribute.datatype is DataTypes.Double and \
-                        DataTypes.value_is_double(attribute.example_value) or \
+                        DataTypes.value_is_float(attribute.example_value) or \
                         attribute.datatype is DataTypes.String:
                     attributes[key_prefix + attribute.attribute_key_modified] = attribute.example_value
                 elif attribute.datatype is DataTypes.Boolean and DataTypes.value_is_boolean(attribute.example_value):

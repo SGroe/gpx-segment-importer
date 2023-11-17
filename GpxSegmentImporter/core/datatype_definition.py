@@ -41,12 +41,12 @@ class DataTypes:
     def detect_data_type(text):
         if DataTypes.value_is_int(text):
             return DataTypes.Integer
-        elif DataTypes.value_is_double(text):
+        elif DataTypes.value_is_float(text):
             return DataTypes.Double
         elif DataTypes.value_is_boolean(text):
             return DataTypes.Boolean
-        # elif self.str_is_date(extension.text):
-        #     return DataTypes.Date
+        elif DataTypes.value_is_date(text):
+            return DataTypes.Date
         else:
             return DataTypes.String
 
@@ -73,7 +73,7 @@ class DataTypes:
         if type(value) is str:
             if value is None:
                 return False
-            if value in ['true', 'false', 'TRUE', 'FALSE', 1, 0, 't', 'f']:
+            if value in ['true', 'false', 'True', 'False', 'TRUE', 'FALSE', 1, 0, 't', 'f']:
                 return True
             return False
         elif type(value) is bool:
@@ -82,7 +82,7 @@ class DataTypes:
             return False
 
     @staticmethod
-    def value_is_double(value):
+    def value_is_float(value):
         if type(value) is str:
             if value is None:
                 return False
@@ -113,11 +113,11 @@ class DataTypes:
         else:
             return False
 
-    @staticmethod
-    def string_to_boolean(string):
-        if string is True or string in ['true', 'TRUE', '1', 't']:
-            return True
-        return False
+    # @staticmethod
+    # def string_to_boolean(string):
+    #     if string is True or string in ['true', 'TRUE', '1', 't']:
+    #         return True
+    #     return False
 
     @staticmethod
     def create_date(s, custom_format=None):
