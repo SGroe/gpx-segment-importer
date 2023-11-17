@@ -127,23 +127,17 @@ class DataTypes:
         s = re.sub(r"[+-]([0-9]{4})+", "", s)
 
         # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
-        try:
-            if custom_format is not None:
-                return datetime.strptime(s, custom_format)
-            else:
-                raise ValueError('')
-        except ValueError:
+
+        date_formats = [
+            custom_format if custom_format is not None else '',
+            '%Y-%m-%dT%H:%M:%SZ',
+            '%Y-%m-%dT%H:%M:%S.%fZ',
+            '%Y-%m-%dT%H:%M:%S',
+            '%Y-%m-%dT%H:%M:%S.%f'
+        ]
+        for date_format in date_formats:
             try:
-                return datetime.strptime(s, '%Y-%m-%dT%H:%M:%SZ')
+                return datetime.strptime(s, date_format)
             except ValueError:
-                try:
-                    return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
-                except ValueError:
-                    try:
-                        return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S')
-                    except ValueError:
-                        try:
-                            return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%f')
-                        except ValueError:
-                            pass
+                pass
         return None
