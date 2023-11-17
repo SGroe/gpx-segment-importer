@@ -133,10 +133,14 @@ class DataTypes:
 
         date_formats = [
             custom_format if custom_format is not None else '',
-            '%Y-%m-%dT%H:%M:%SZ',
-            '%Y-%m-%dT%H:%M:%S.%fZ',
-            '%Y-%m-%dT%H:%M:%S',
-            '%Y-%m-%dT%H:%M:%S.%f'
+            '%Y-%m-%dT%H:%M:%S',  # 2023-10-15T14:58:34
+            '%Y-%m-%dT%H:%M:%SZ',  # 2023-10-15T14:58:34Z
+            '%Y-%m-%dT%H:%M:%S.%f',  # 2023-10-15T14:58:34.874
+            '%Y-%m-%dT%H:%M:%S.%fZ',  # 2023-10-15T14:58:34.874Z
+            '%Y-%m-%dT%H:%M:%S%z',  # 2023-10-15T14:58:34+03:00
+            '%Y-%m-%dT%H:%M:%S%zZ',  # 2023-10-15T14:58:34+03:00Z
+            '%Y-%m-%dT%H:%M:%S.%f%z',  # 2023-10-15T14:58:34.874+03:00
+            '%Y-%m-%dT%H:%M:%S.%f%zZ'  # 2023-10-15T14:58:34.874+03:00Z
         ]
         for date_format in date_formats:
             try:
