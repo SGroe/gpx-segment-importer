@@ -14,8 +14,8 @@ class SegmentBuilderFromPoints(SegmentLayerBuilder):
     def __init__(self, ):
         super().__init__()
 
-    def build_segments(self, point_layer, timestamp_field, timestamp_format, attribute_select="Last",
-                       calculate_motion_attributes=False):
+    def build_segments(self, point_layer, timestamp_field, timestamp_format,
+                       attribute_select='last', calculate_motion_attributes=False):
         """
         Imports the data from the source layer and create the vector layer
         """
@@ -50,20 +50,22 @@ class SegmentBuilderFromPoints(SegmentLayerBuilder):
 
                 # add a feature with first/last/both attributes
                 attributes = dict()
-                if attribute_select == 'First':
+                if attribute_select == super().ATTRIBUTE_SELECT_FIRST:
                     self.add_attributes(attributes, prev_track_point, '')
-                elif attribute_select == 'Last':
+                elif attribute_select == super().ATTRIBUTE_SELECT_LAST:
                     self.add_attributes(attributes, track_point, '')
-                elif attribute_select == 'Both':
+                elif attribute_select == super().ATTRIBUTE_SELECT_BOTH:
                     self.add_attributes(attributes, prev_track_point, 'a_')
                     self.add_attributes(attributes, track_point, 'b_')
 
                 if calculate_motion_attributes:
                     attributes['_a_index'] = prev_track_point_index
                     attributes['_b_index'] = self.track_point_count - 1
-                    attributes['_distance'] = GeomTools.distance(prev_track_point.geometry().constGet(),
-                                                                 track_point.geometry().constGet(),
-                                                                 point_layer.sourceCrs())
+                    attributes['_distance'] = GeomTools.distance(
+                        prev_track_point.geometry().constGet(),
+                        track_point.geometry().constGet(),
+                        point_layer.sourceCrs()
+                    )
 
                     time_a = None
                     time_b = None

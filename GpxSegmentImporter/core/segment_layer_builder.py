@@ -1,6 +1,4 @@
 import os
-# PyQt imports
-from qgis.PyQt.QtCore import QVariant
 # QGIS imports
 from qgis.core import QgsVectorLayer, QgsField, QgsFeature, QgsGeometry
 # Plugin imports
@@ -11,6 +9,10 @@ from .vector_file_writer import VectorFileWriter
 class SegmentLayerBuilder:
     """ Builds segment layers and features """
 
+    ATTRIBUTE_SELECT_FIRST = 'first'
+    ATTRIBUTE_SELECT_BOTH = 'both'
+    ATTRIBUTE_SELECT_LAST = 'last'
+
     def __init__(self):
         self.attribute_definitions: list[DataTypeDefinition] = list()
         self.error_message = ''
@@ -20,7 +22,7 @@ class SegmentLayerBuilder:
         self.segment_layer = None
         self.data_provider = None
 
-    def initialize_layer(self, layer_name, attribute_select='Last', crs=None):
+    def initialize_layer(self, layer_name, attribute_select=ATTRIBUTE_SELECT_LAST, crs=None):
         layer_definition: str = 'LineString'
         if crs is not None:
             layer_definition = layer_definition + "?crs=epsg:" + str(crs.postgisSrid())
@@ -34,21 +36,21 @@ class SegmentLayerBuilder:
             if not attribute.selected:  # select attribute [boolean]
                 continue
 
-            for attribute_select_option in ['First', 'Last']:
-                if attribute_select_option != attribute_select and attribute_select != 'Both':
+            for attribute_select_option in [self.ATTRIBUTE_SELECT_FIRST, self.ATTRIBUTE_SELECT_LAST]:
+                if attribute_select_option != attribute_select and attribute_select != self.ATTRIBUTE_SELECT_BOTH:
                     continue
 
                 prefix = ''  # prefix only if attribute_select = 'Both' AND not for motion attributes
-                if attribute_select == 'Both'\
+                if attribute_select == self.ATTRIBUTE_SELECT_BOTH\
                         and attribute.attribute_key_modified != '_a_index' \
                         and attribute.attribute_key_modified != '_b_index' \
                         and attribute.attribute_key_modified != '_distance' \
                         and attribute.attribute_key_modified != '_duration' \
                         and attribute.attribute_key_modified != '_speed' \
                         and attribute.attribute_key_modified != '_elevation_diff':
-                    if attribute_select_option == 'First':
+                    if attribute_select_option == self.ATTRIBUTE_SELECT_FIRST:
                         prefix = 'a_'
-                    elif attribute_select_option == 'Last':
+                    elif attribute_select_option == self.ATTRIBUTE_SELECT_LAST:
                         prefix = 'b_'
 
                 attributes.append(attribute.build_field(prefix))

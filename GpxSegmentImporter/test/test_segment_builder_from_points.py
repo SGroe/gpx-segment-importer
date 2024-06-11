@@ -83,3 +83,21 @@ class TestSegmentBuilder(unittest.TestCase):
                 self.assertAlmostEqual(feature['_distance'], 4, 0)
                 self.assertAlmostEqual(feature['_speed'], 0, 0)
                 self.assertAlmostEqual(feature['_elevation_diff'], -0.6, 1)
+
+    def test_build_segments_with_both_attributes(self):
+        self.test_build_point_layer()
+        segment_layer = self.segment_builder.build_segments(
+            self.point_layer, "timestamp", '',
+            attribute_select=self.segment_builder.ATTRIBUTE_SELECT_BOTH,
+            calculate_motion_attributes=False
+        )
+        self.assertEqual(len(self.segment_builder.attribute_definitions), 2)
+        self.assertEqual(segment_layer.fields().size(), 4)
+        self.assertEqual(segment_layer.featureCount(), 2)
+        for index, feature in enumerate(segment_layer.getFeatures()):
+            if index == 0:
+                self.assertEqual(feature['a_description'], 'start point')
+                self.assertEqual(feature['b_description'], '90 seconds later')
+            elif index == 1:
+                self.assertEqual(feature['a_description'], '90 seconds later')
+                self.assertEqual(feature['b_description'], 'equal coordinate')
