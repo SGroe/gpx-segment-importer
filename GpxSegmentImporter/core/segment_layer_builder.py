@@ -60,6 +60,10 @@ class SegmentLayerBuilder:
                     else:
                         field = QgsField(key, QVariant.String, 'String')
 
+                    if attribute.length > 0:
+                        field.setLength(attribute.length)
+                    if attribute.precision > 0:
+                        field.setPrecision(attribute.length)
                     attributes.append(field)
 
         # Enter editing mode

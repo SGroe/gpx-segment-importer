@@ -53,6 +53,43 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
             uri, ignore, tag = root.tag[1:].partition("}")
             self.namespace = {'gpx': uri}
 
+    def create_fields_from_mapping(self, field_mappings):
+        """
+        Example mapping: {'alias': '', 'comment': '', 'expression': '"ele"', 'length': 0, 'name': 'ele',
+        'precision': 0, 'sub_type': 0, 'type': 6, 'type_name': 'double precision'}
+        """
+        self.attribute_definitions = list()
+
+        for mapping in field_mappings:
+            if mapping['type_name'] == 'double precision':
+                data_type = DataTypes.Double
+            elif mapping['type_name'] == 'integer' or mapping['type_name'] == 'int8':
+                data_type = DataTypes.Integer
+            elif mapping['type_name'] == 'datetime':
+                data_type = DataTypes.Date
+            elif mapping['type_name'] == 'date':
+                data_type = DataTypes.Date
+            elif mapping['type_name'] == 'time':
+                data_type = DataTypes.Date
+            elif mapping['type_name'] == 'boolean':
+                data_type = DataTypes.Boolean
+            elif mapping['type_name'] == 'text':
+                data_type = DataTypes.String
+            else:
+                data_type = DataTypes.String
+            new_definition = DataTypeDefinition(
+                mapping['name'],
+                data_type,
+                True,
+                None)
+            if ('"' + mapping['name'] + '"') != mapping['expression']:
+                new_definition.attribute_key = QgsExpression(mapping['expression'])
+            if mapping['length'] > 0:
+                new_definition.length = mapping['length']
+            if mapping['precision'] > 0:
+                new_definition.precision = mapping['precision']
+            self.attribute_definitions.append(new_definition)
+
     def import_gpx_file(self, file_path, output_directory, attribute_select="Last", use_wgs84=True,
                         calculate_motion_attributes=False, overwrite=False):
         """ Imports the data from the GPX file and create the vector layer """
