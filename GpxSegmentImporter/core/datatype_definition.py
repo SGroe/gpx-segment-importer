@@ -1,6 +1,7 @@
 from datetime import *
 import re
-from qgis.PyQt.QtCore import QDateTime
+from qgis.PyQt.QtCore import QDateTime, QVariant
+from qgis.core import QgsField
 
 
 class DataTypeDefinition:
@@ -20,6 +21,30 @@ class DataTypeDefinition:
         self.datatype = datatype
         self.selected = selected
         self.example_value = example_value
+
+    def build_field(self, prefix=''):
+        key = prefix + str(self.attribute_key_modified)
+        if self.datatype == DataTypes.Integer:  # data type [Integer|Double|String]
+            field = QgsField(key, QVariant.Int, 'Integer')
+        elif self.datatype == DataTypes.Double:
+            field = QgsField(key, QVariant.Double, 'Real')
+        elif self.datatype == DataTypes.Boolean:
+            # QVariant.Bool is not available for QgsField
+            # attributes.append(QgsField(key, QVariant.Bool, 'Boolean'))
+            field = QgsField(key, QVariant.String, 'String')
+        elif self.datatype == DataTypes.Date:
+            field = QgsField(key, QVariant.DateTime, 'datetime')
+        elif self.datatype == DataTypes.String:
+            field = QgsField(key, QVariant.String, 'String')
+        else:
+            field = QgsField(key, QVariant.String, 'String')
+
+        if self.length > 0:
+            field.setLength(self.length)
+        if self.precision > 0:
+            field.setPrecision(self.length)
+
+        return field
 
 
 # https://stackoverflow.com/questions/702834/whats-the-common-practice-for-enums-in-python

@@ -1,6 +1,8 @@
 import datetime
 import unittest
-from ..core.datatype_definition import DataTypes
+from ..core.datatype_definition import DataTypes, DataTypeDefinition
+from qgis.core import QgsField
+from qgis.PyQt.QtCore import QVariant
 
 
 class TestFeatureBuilder(unittest.TestCase):
@@ -40,3 +42,27 @@ class TestFeatureBuilder(unittest.TestCase):
         self.assertEqual(definition.create_date("2023-11-17T21:07:54.874"),
                          datetime.datetime(2023, 11, 17, 21, 7, 54, 874000))
 
+    def test_build_field(self):
+        int_type = DataTypeDefinition('_a_index', DataTypes.Integer, True, '')
+        int_field: QgsField = int_type.build_field()
+        self.assertEqual('_a_index', int_field.name())
+        self.assertEqual(QVariant.Int, int_field.type())
+        self.assertEqual('Integer', int_field.typeName())
+
+        int_type = DataTypeDefinition('_speed', DataTypes.Double, True, '')
+        int_field: QgsField = int_type.build_field()
+        self.assertEqual('_speed', int_field.name())
+        self.assertEqual(QVariant.Double, int_field.type())
+        self.assertEqual('Real', int_field.typeName())
+
+        int_type = DataTypeDefinition('label', DataTypes.String, True, '')
+        int_field: QgsField = int_type.build_field()
+        self.assertEqual('label', int_field.name())
+        self.assertEqual(QVariant.String, int_field.type())
+        self.assertEqual('String', int_field.typeName())
+
+        int_type = DataTypeDefinition('timestamp', DataTypes.Date, True, '')
+        int_field: QgsField = int_type.build_field()
+        self.assertEqual('timestamp', int_field.name())
+        self.assertEqual(QVariant.DateTime, int_field.type())
+        self.assertEqual('datetime', int_field.typeName())

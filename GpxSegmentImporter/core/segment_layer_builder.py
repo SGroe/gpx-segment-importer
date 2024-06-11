@@ -31,40 +31,27 @@ class SegmentLayerBuilder:
         # Build field list
         attributes: list[QgsField] = list()
         for attribute in self.attribute_definitions:
-            if attribute.selected:  # select attribute [boolean]
-                for attribute_select_option in ['First', 'Last']:
-                    if attribute_select_option != attribute_select and attribute_select != 'Both':
-                        continue
+            if not attribute.selected:  # select attribute [boolean]
+                continue
 
-                    key = str(attribute.attribute_key_modified)
-                    if attribute_select == 'Both' and attribute.attribute_key_modified != '_distance' \
-                            and attribute.attribute_key_modified != '_duration' \
-                            and attribute.attribute_key_modified != '_speed':
-                        if attribute_select_option == 'First':
-                            key = 'a_' + key
-                        elif attribute_select_option == 'Last':
-                            key = 'b_' + key
+            for attribute_select_option in ['First', 'Last']:
+                if attribute_select_option != attribute_select and attribute_select != 'Both':
+                    continue
 
-                    if attribute.datatype == DataTypes.Integer:  # data type [Integer|Double|String]
-                        field = QgsField(key, QVariant.Int, 'Integer')
-                    elif attribute.datatype == DataTypes.Double:
-                        field = QgsField(key, QVariant.Double, 'Real')
-                    elif attribute.datatype == DataTypes.Boolean:
-                        # QVariant.Bool is not available for QgsField
-                        # attributes.append(QgsField(key, QVariant.Bool, 'Boolean'))
-                        field = QgsField(key, QVariant.String, 'String')
-                    elif attribute.datatype == DataTypes.Date:
-                        field = QgsField(key, QVariant.DateTime, 'datetime')
-                    elif attribute.datatype == DataTypes.String:
-                        field = QgsField(key, QVariant.String, 'String')
-                    else:
-                        field = QgsField(key, QVariant.String, 'String')
+                prefix = ''  # prefix only if attribute_select = 'Both' AND not for motion attributes
+                if attribute_select == 'Both'\
+                        and attribute.attribute_key_modified != '_a_index' \
+                        and attribute.attribute_key_modified != '_b_index' \
+                        and attribute.attribute_key_modified != '_distance' \
+                        and attribute.attribute_key_modified != '_duration' \
+                        and attribute.attribute_key_modified != '_speed' \
+                        and attribute.attribute_key_modified != '_elevation_diff':
+                    if attribute_select_option == 'First':
+                        prefix = 'a_'
+                    elif attribute_select_option == 'Last':
+                        prefix = 'b_'
 
-                    if attribute.length > 0:
-                        field.setLength(attribute.length)
-                    if attribute.precision > 0:
-                        field.setPrecision(attribute.length)
-                    attributes.append(field)
+                attributes.append(attribute.build_field(prefix))
 
         # Enter editing mode
         self.segment_layer.startEditing()
