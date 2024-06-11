@@ -87,41 +87,37 @@ class TrackSegmentCreatorAlgorithm(QgsProcessingAlgorithm):
         with some other properties.
         """
 
-        # We add the input vector layer. It can have any kind of geometry
-        # It is a mandatory (not optional) one, hence the False argument
-        # self.addParameter(QgsProcessingParameterFeatureSource(self.INPUT, self.tr('Input gpx file'),
-        #                                                       [QgsProcessing.TypeVectorLine]))
-        self.addParameter(QgsProcessingParameterFeatureSource(self.INPUT,
-                                                              self.tr('Input point layer'),
-                                                              [QgsProcessing.TypeVectorPoint],
-                                                              None, False))
-        self.addParameter(QgsProcessingParameterField(self.TIMESTAMP_FIELD,
-                                                      self.tr('Timestamp field'),
-                                                      parentLayerParameterName=self.INPUT,
-                                                      # type=QgsProcessingParameterField.Any))
-                                                      type=QgsProcessingParameterField.DateTime))
-        # self.addParameter(QgsProcessingParameterString(self.TIMESTAMP_FIELD,
-        #                                                self.tr('Timestamp field'),
-        #                                                None, False, False))
-        # self.addParameter(QgsProcessingParameterString(self.TIMESTAMP_FORMAT,
-        #                                                self.tr('Timestamp format (applies only if \'Timestamp field\''
-        #                                                        ' is of type string)'),
-        #                                                '%Y-%m-%dT%H:%M:%S', False, True))
-        self.addParameter(QgsProcessingParameterEnum(self.ATTRIBUTE_MODE,
-                                                     self.tr('Add attributes from which segment track point(s)'),
-                                                     options=self.attribute_mode_options_labels,
-                                                     allowMultiple=False, defaultValue=2, optional=False))
-        self.addParameter(QgsProcessingParameterBoolean(self.CALCULATE_MOTION_ATTRIBUTES,
-                                                        self.tr(
-                                                            'Calculate motion attributes between track points'),
-                                                        defaultValue=True, optional=True))
-        # self.addParameter(QgsProcessingParameterBoolean(self.USE_EPSG_4326,
-        #                                                 self.tr('Use \'EPSG:4326\' coordinate reference system'),
-        #                                                 True, True))
+        self.addParameter(QgsProcessingParameterFeatureSource(
+            self.INPUT,
+            self.tr('Input point layer'),
+            [QgsProcessing.TypeVectorPoint],
+            None, False)
+        )
+        self.addParameter(QgsProcessingParameterField(
+            self.TIMESTAMP_FIELD,
+            self.tr('Timestamp field'),
+            parentLayerParameterName=self.INPUT,
+            type=QgsProcessingParameterField.DateTime)
+        )
+        self.addParameter(QgsProcessingParameterEnum(
+            self.ATTRIBUTE_MODE,
+            self.tr('Add attributes from which segment track point(s)'),
+            options=self.attribute_mode_options_labels,
+            allowMultiple=False,
+            defaultValue=2,
+            optional=False))
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.CALCULATE_MOTION_ATTRIBUTES,
+            self.tr('Calculate motion attributes between track points'),
+            defaultValue=True,
+            optional=True)
+        )
 
         # We add a vector layer as output
-        self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr('Track segments'),
-                                                            QgsProcessing.TypeVectorLine))
+        self.addParameter(QgsProcessingParameterFeatureSink(
+            self.OUTPUT, self.tr('Track segments'),
+            QgsProcessing.TypeVectorLine)
+        )
 
         self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_SEGMENT_COUNT, self.tr('Number of segments')))
         self.addOutput(QgsProcessingOutputNumber(self.OUTPUT_TRACK_POINT_COUNT, self.tr('Number of track points')))
@@ -162,4 +158,4 @@ class TrackSegmentCreatorAlgorithm(QgsProcessingAlgorithm):
         return {self.OUTPUT: dest_id,
                 self.OUTPUT_SEGMENT_COUNT: layer.featureCount(),
                 self.OUTPUT_TRACK_POINT_COUNT: self.point_layer_reader.track_point_count,
-                self.OUTPUT_EQUAL_COORDINATE_COUNT: self.point_layer_reader.equal_coordinates}
+                self.OUTPUT_EQUAL_COORDINATE_COUNT: self.point_layer_reader.equal_coordinates_count}
