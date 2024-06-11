@@ -5,7 +5,8 @@ from qgis.PyQt.QtGui import QIcon
 # qgis imports
 from qgis.core import (QgsProcessingParameterBoolean, QgsProcessingParameterEnum, QgsProcessingParameterFile,
                        QgsProcessingParameterFeatureSink, QgsProcessing, QgsFeatureSink, QgsProcessingOutputNumber,
-                       QgsWkbTypes, QgsProcessingAlgorithm)
+                       QgsWkbTypes, QgsProcessingAlgorithm, QgsProcessingParameterFieldMapping,
+                       QgsProcessingParameterDefinition)
 # plugin
 from ..core.segment_builder_from_gpx import SegmentBuilderFromGpx
 
@@ -38,6 +39,7 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
         self.INPUT = 'INPUT'
         self.ATTRIBUTE_MODE = 'ATTRIBUTE_MODE'
         self.CALCULATE_MOTION_ATTRIBUTES = 'CALCULATE_MOTION_ATTRIBUTES'
+        # self.FIELD_MAPPING = 'FIELD_MAPPING'
         # self.USE_EPSG_4326 = 'USE_EPSG_4326'
         self.OUTPUT = 'OUTPUT'
         self.OUTPUT_SEGMENT_COUNT = 'OUTPUT_SEGMENT_COUNT'
@@ -108,6 +110,13 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
         #     self.tr('Calculate motion attributes between track points'),
         #     self.motion_attribute_labels,
         #     True, [0, 1, 2, 3, 4, 5], False))
+        # parameter = QgsProcessingParameterFieldMapping(
+        #     self.FIELD_MAPPING,
+        #     self.tr('Fields'),
+        #     self.INPUT
+        # )
+        # parameter.setFlags(parameter.flags() | QgsProcessingParameterDefinition.FlagAdvanced)
+        # self.addParameter(parameter)
         # self.addParameter(QgsProcessingParameterBoolean(
         #     self.USE_EPSG_4326,
         #     self.tr('Use \'EPSG:4326\' coordinate reference system'),
@@ -144,6 +153,7 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
 
         use_epsg4326 = True  # self.parameterAsBool(parameters, self.USE_EPSG_4326, context)
 
+        # self.gpx_file_reader.create_fields_from_mapping(parameters[self.FIELD_MAPPING])
         layer = self.gpx_file_reader.import_gpx_file(
             input_file, None, attribute_mode, use_epsg4326, calculate_motion_attributes, False
         )
