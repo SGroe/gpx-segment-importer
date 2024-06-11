@@ -6,6 +6,14 @@ from qgis.PyQt.QtCore import QDateTime
 class DataTypeDefinition:
     """ Datatype definition class """
 
+    attribute_key = None
+    attribute_key_modified = None
+    datatype = 'text'
+    length = 0
+    precision = 0
+    selected = True
+    example_value = None
+
     def __init__(self, attribute_key, datatype, selected, example_value):
         self.attribute_key = attribute_key
         self.attribute_key_modified = attribute_key
