@@ -88,20 +88,32 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
         with some other properties.
         """
 
-        self.addParameter(QgsProcessingParameterFile(self.INPUT, self.tr('Input gpx file'),
-                                                     0, 'gpx', None, False))
-        self.addParameter(QgsProcessingParameterEnum(self.ATTRIBUTE_MODE,
-                                                     self.tr('Add attributes from which segment track point(s)'),
-                                                     self.attribute_mode_options_labels, False, 2, False))
-        self.addParameter(QgsProcessingParameterBoolean(self.CALCULATE_MOTION_ATTRIBUTES,
-                                                        self.tr('Calculate motion attributes between track points'),
-                                                        True, True))
-        # self.addParameter(QgsProcessingParameterEnum(self.CALCULATE_MOTION_ATTRIBUTES,
-        #                                              self.tr('Calculate motion attributes between track points'),
-        #                                              self.motion_attribute_labels, True, [0, 1, 2, 3, 4, 5], False))
-        # self.addParameter(QgsProcessingParameterBoolean(self.USE_EPSG_4326,
-        #                                                 self.tr('Use \'EPSG:4326\' coordinate reference system'),
-        #                                                 True, True))
+        self.addParameter(QgsProcessingParameterFile(
+            self.INPUT,
+            self.tr('Input gpx file'),
+            QgsProcessingParameterFile.Behavior.File,
+            'gpx', None, False
+        ))
+        self.addParameter(QgsProcessingParameterEnum(
+            self.ATTRIBUTE_MODE,
+            self.tr('Add attributes from which segment track point(s)'),
+            self.attribute_mode_options_labels,
+            False, 2, False))
+        self.addParameter(QgsProcessingParameterBoolean(
+            self.CALCULATE_MOTION_ATTRIBUTES,
+            self.tr('Calculate motion attributes between track points'),
+            True, True))
+        # self.addParameter(QgsProcessingParameterEnum(
+        #     self.CALCULATE_MOTION_ATTRIBUTES,
+        #     self.tr('Calculate motion attributes between track points'),
+        #     self.motion_attribute_labels,
+        #     True, [0, 1, 2, 3, 4, 5], False))
+        # self.addParameter(QgsProcessingParameterBoolean(
+        #     self.USE_EPSG_4326,
+        #     self.tr('Use \'EPSG:4326\' coordinate reference system'),
+        #     True,
+        #     True)
+        # )
 
         # We add a vector layer as output
         self.addParameter(QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr('Track segments'),
@@ -116,7 +128,6 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
                                                          'coordinates')))
 
     def processAlgorithm(self, parameters, context, feedback):
-        pass
         input_file = self.parameterAsFile(parameters, self.INPUT, context)
         attribute_mode = self.attribute_mode_options[self.parameterAsInt(parameters, self.ATTRIBUTE_MODE, context)]
         if isinstance(parameters[self.CALCULATE_MOTION_ATTRIBUTES], bool):
@@ -126,16 +137,16 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
             else:
                 calculate_motion_attributes_list = [0, 0, 0, 0, 0, 0]
         else:
-            calculate_motion_attributes_list = self.parameterAsEnums(parameters,
-                                                                     self.CALCULATE_MOTION_ATTRIBUTES,
-                                                                     context)
-            calculate_motion_attributes = True  # TODO
-        feedback.pushInfo("calculate_motion_attributes_list " + str(calculate_motion_attributes_list))
+            calculate_motion_attributes_list = self.parameterAsEnums(
+                parameters, self.CALCULATE_MOTION_ATTRIBUTES, context
+            )
+            calculate_motion_attributes = True  # TODO use attribute list
 
         use_epsg4326 = True  # self.parameterAsBool(parameters, self.USE_EPSG_4326, context)
 
-        layer = self.gpx_file_reader.import_gpx_file(input_file, None, attribute_mode, use_epsg4326,
-                                                     calculate_motion_attributes, False)
+        layer = self.gpx_file_reader.import_gpx_file(
+            input_file, None, attribute_mode, use_epsg4326, calculate_motion_attributes, False
+        )
 
         if self.gpx_file_reader.error_message != '':
             feedback.reportError(self.gpx_file_reader.error_message, True)
@@ -156,10 +167,11 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
             # Update the progress bar
             feedback.setProgress(int(current * total))
 
-        return {self.OUTPUT: dest_id,
-                self.OUTPUT_SEGMENT_COUNT: layer.featureCount(),
-                self.OUTPUT_TRACK_COUNT: self.gpx_file_reader.track_count,
-                self.OUTPUT_TRACK_SEGMENT_COUNT: self.gpx_file_reader.track_segment_count,
-                self.OUTPUT_TRACK_POINT_COUNT: self.gpx_file_reader.track_point_count,
-                self.OUTPUT_EQUAL_COORDINATE_COUNT: self.gpx_file_reader.equal_coordinates
-                }
+        return {
+            self.OUTPUT: dest_id,
+            self.OUTPUT_SEGMENT_COUNT: layer.featureCount(),
+            self.OUTPUT_TRACK_COUNT: self.gpx_file_reader.track_count,
+            self.OUTPUT_TRACK_SEGMENT_COUNT: self.gpx_file_reader.track_segment_count,
+            self.OUTPUT_TRACK_POINT_COUNT: self.gpx_file_reader.track_point_count,
+            self.OUTPUT_EQUAL_COORDINATE_COUNT: self.gpx_file_reader.equal_coordinates_count
+        }
