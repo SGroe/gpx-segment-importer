@@ -50,7 +50,7 @@ class GpxSegmentImporterAlgorithm(QgsProcessingAlgorithm):
 
         self.attribute_mode_options = ['Both', 'First', 'Last']
         self.attribute_mode_options_labels = [self.tr('Both'), self.tr('First'), self.tr('Last')]
-        self.motion_attribute_labels = ['a_index', 'b_index', 'distance', 'duration', 'speed', 'elevation_diff']
+        self.motion_attribute_labels = ['A_INDEX', 'B_INDEX', 'DISTANCE', 'DURATION', 'SPEED', 'ELEVATION_DIFF']
 
         self.gpx_file_reader = SegmentBuilderFromGpx()
 
