@@ -31,7 +31,6 @@ from qgis.core import Qgis, QgsProject, QgsApplication
 from ..core.segment_builder_from_gpx import SegmentBuilderFromGpx
 from .attribute_table_model import AttributeTableModel
 from .datatype_combo_delegate import DatatypeComboDelegate
-from ..processing.gpx_segment_importer_provider import GpxSegmentImporterProvider
 # dialog
 from .gpx_segment_importer_dialog import GpxSegmentImporterDialog
 # other
@@ -52,24 +51,24 @@ class GpxSegmentImporter:
         """
         # Save reference to the QGIS interface
         self.iface = iface
-        # initialize plugin directory
-        self.plugin_dir = os.path.dirname(__file__)
-        # initialize locale
-        locale_path = os.path.join(
-            self.plugin_dir,
-            '../i18n',
-            'gpx_segment_importer_{}.qm'.format(QSettings().value('locale/userLocale')[0:2]))
+        # # initialize plugin directory
+        # self.plugin_dir = os.path.dirname(__file__)
+        # # initialize locale
+        # locale_path = os.path.join(
+        #     self.plugin_dir,
+        #     '../i18n',
+        #     'gpx_segment_importer_{}.qm'.format(QSettings().value('locale/userLocale')[0:2]))
+        #
+        # if os.path.exists(locale_path):
+        #     self.translator = QTranslator()
+        #     self.translator.load(locale_path)
+        #     QCoreApplication.installTranslator(self.translator)
 
-        if os.path.exists(locale_path):
-            self.translator = QTranslator()
-            self.translator.load(locale_path)
-            QCoreApplication.installTranslator(self.translator)
-
-        # Declare instance attributes
-        self.actions = []
-        self.menu = self.tr(u'&GPX Segment Tools')
-        self.toolbar = self.iface.addToolBar(u'GPX Segment Toolbar')
-        self.toolbar.setObjectName(u'GPX Segment Toolbar')
+        # # Declare instance attributes
+        # self.actions = []
+        # self.menu = self.tr(u'&GPX Segment Tools')
+        # self.toolbar = self.iface.addToolBar(u'GPX Segment Toolbar')
+        # self.toolbar.setObjectName(u'GPX Segment Toolbar')
 
         # Create the dialog (after translation) and keep reference
         self.dlg = GpxSegmentImporterDialog()
@@ -228,8 +227,7 @@ class GpxSegmentImporter:
         table_view.setModel(tm)
 
         combo_delegate = DatatypeComboDelegate(table_view)
-        # combo_delegate.setItems(['Integer', 'Double', 'Date', 'String'])
-        combo_delegate.setItems(['Boolean', 'Integer', 'Double', 'String'])
+        combo_delegate.setItems(['Boolean', 'Integer', 'Double', 'String', 'Date'])
         table_view.setItemDelegateForColumn(2, combo_delegate)
 
         # https://gist.github.com/Riateche/5984815
