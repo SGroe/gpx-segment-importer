@@ -12,9 +12,9 @@ class SegmentLayerBuilder:
     """ Builds segment layers and features """
 
     def __init__(self):
-        self.attribute_definitions = list()
+        self.attribute_definitions: list[DataTypeDefinition] = list()
         self.error_message = ''
-        self.equal_coordinates = 0
+        self.equal_coordinates_count = 0
         self.track_point_count = 0
 
         self.segment_layer = None
@@ -28,9 +28,8 @@ class SegmentLayerBuilder:
         self.segment_layer = QgsVectorLayer(layer_definition, layer_name, "memory")
         self.data_provider = self.segment_layer.dataProvider()
 
-        # Enter editing mode
-        self.segment_layer.startEditing()
-        attributes = list()
+        # Build field list
+        attributes: list[QgsField] = list()
         for attribute in self.attribute_definitions:
             if attribute.selected:  # select attribute [boolean]
                 for attribute_select_option in ['First', 'Last']:
@@ -47,17 +46,24 @@ class SegmentLayerBuilder:
                             key = 'b_' + key
 
                     if attribute.datatype == DataTypes.Integer:  # data type [Integer|Double|String]
-                        attributes.append(QgsField(key, QVariant.Int, 'Integer'))
+                        field = QgsField(key, QVariant.Int, 'Integer')
                     elif attribute.datatype == DataTypes.Double:
-                        attributes.append(QgsField(key, QVariant.Double, 'Real'))
+                        field = QgsField(key, QVariant.Double, 'Real')
                     elif attribute.datatype == DataTypes.Boolean:
                         # QVariant.Bool is not available for QgsField
                         # attributes.append(QgsField(key, QVariant.Bool, 'Boolean'))
-                        attributes.append(QgsField(key, QVariant.String, 'String'))
-                    # elif attribute.datatype == DataTypes.Date:
-                    #     attributes.append(QgsField(key, QVariant.DateTime, 'String'))
+                        field = QgsField(key, QVariant.String, 'String')
+                    elif attribute.datatype == DataTypes.Date:
+                        field = QgsField(key, QVariant.DateTime, 'datetime')
                     elif attribute.datatype == DataTypes.String:
-                        attributes.append(QgsField(key, QVariant.String, 'String'))
+                        field = QgsField(key, QVariant.String, 'String')
+                    else:
+                        field = QgsField(key, QVariant.String, 'String')
+
+                    attributes.append(field)
+
+        # Enter editing mode
+        self.segment_layer.startEditing()
         self.data_provider.addAttributes(attributes)
         self.segment_layer.updateFields()
 
@@ -75,7 +81,7 @@ class SegmentLayerBuilder:
                 return attribute
         return None
 
-    def add_feature(self, line_coordinates, attributes):
+    def add_segment_feature(self, line_coordinates, attributes):
         feature = QgsFeature()
         feature.setGeometry(QgsGeometry.fromPolyline(line_coordinates))
         feature.setFields(self.segment_layer.fields(), True)
@@ -103,10 +109,10 @@ class SegmentLayerBuilder:
                     if output_file_path is not None:
                         return QgsVectorLayer(output_file_path, os.path.basename(output_file_path), 'ogr')
                     else:
-                        self.error_message = 'Writing vector layer failed...'  # throw exception
+                        self.error_message = 'Writing vector layer failed...'  # TODO throw exception
                         return None
                 else:
-                    self.error_message = 'Cannot find output directory'  # throw exception
+                    self.error_message = 'Cannot find output directory'  # TODO throw exception
                     return None
 
         return self.segment_layer

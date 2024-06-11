@@ -36,7 +36,7 @@ class SegmentBuilderFromPoints(SegmentLayerBuilder):
 
         prev_track_point = None
         prev_track_point_index = -1
-        self.equal_coordinates = 0
+        self.equal_coordinates_count = 0
         self.track_point_count = 0
 
         for track_point in point_layer.getFeatures():
@@ -45,7 +45,7 @@ class SegmentBuilderFromPoints(SegmentLayerBuilder):
             if prev_track_point is not None:
                 if GeomTools.is_equal_coordinate(prev_track_point.geometry().asPoint(),
                                                  track_point.geometry().asPoint()):
-                    self.equal_coordinates += 1
+                    self.equal_coordinates_count += 1
                     continue
 
                 # add a feature with first/last/both attributes
@@ -92,7 +92,7 @@ class SegmentBuilderFromPoints(SegmentLayerBuilder):
                         elevation_b = track_point.geometry().vertexAt(0).z()
                         attributes['_elevation_diff'] = elevation_b - elevation_a
 
-                self.add_feature([
+                self.add_segment_feature([
                     prev_track_point.geometry().constGet(),
                     track_point.geometry().constGet()
                 ], attributes)

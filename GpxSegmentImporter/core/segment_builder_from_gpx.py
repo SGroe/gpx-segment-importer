@@ -2,7 +2,7 @@
 import os
 from xml.etree import ElementTree
 # QGIS imports
-from qgis.core import (QgsPoint, QgsCoordinateReferenceSystem)
+from qgis.core import (QgsPoint, QgsCoordinateReferenceSystem, QgsExpression)
 # Plugin imports
 from .datatype_definition import (DataTypeDefinition, DataTypes)
 from .segment_layer_builder import SegmentLayerBuilder
@@ -27,10 +27,7 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
         tree = ElementTree.parse(file_path)
         root = tree.getroot()
 
-        # https://stackoverflow.com/questions/1953761/accessing-xmlns-attribute-with-python-elementree
-        if root.tag[0] == "{":
-            uri, ignore, tag = root.tag[1:].partition("}")
-            self.namespace = {'gpx': uri}
+        self.detect_namespace(root)
 
         track = root.find('gpx:trk', self.namespace)
         if track is not None:
@@ -50,6 +47,12 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
 
         return True if self.error_message == '' else False
 
+    def detect_namespace(self, root):
+        # https://stackoverflow.com/questions/1953761/accessing-xmlns-attribute-with-python-elementree
+        if root.tag[0] == "{":
+            uri, ignore, tag = root.tag[1:].partition("}")
+            self.namespace = {'gpx': uri}
+
     def import_gpx_file(self, file_path, output_directory, attribute_select="Last", use_wgs84=True,
                         calculate_motion_attributes=False, overwrite=False):
         """ Imports the data from the GPX file and create the vector layer """
@@ -62,17 +65,18 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
         if calculate_motion_attributes:
             self.initialize_motion_attributes()
 
-        tree = ElementTree.parse(file_path)
-        root = tree.getroot()
-
         crs = QgsCoordinateReferenceSystem('EPSG:4326') if use_wgs84 else None
 
         self.initialize_layer(os.path.basename(file_path), attribute_select, crs)
 
-        self.equal_coordinates = 0
+        self.equal_coordinates_count = 0
         self.track_count = 0
         self.track_segment_count = 0
         self.track_point_count = 0
+
+        tree = ElementTree.parse(file_path)
+        root = tree.getroot()
+        self.detect_namespace(root)
 
         for track in root.findall('gpx:trk', self.namespace):
             self.track_count += 1
@@ -103,7 +107,7 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
                         )
 
                         if GeomTools.is_equal_coordinate(previous_point, new_point):
-                            self.equal_coordinates += 1
+                            self.equal_coordinates_count += 1
                             continue
 
                         # add a feature with first/last/both attributes
@@ -132,7 +136,7 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
                             if elevation_a is not None or elevation_b is not None:
                                 attributes['_elevation_diff'] = elevation_b - elevation_a
 
-                        self.add_feature([previous_point, new_point], attributes)
+                        self.add_segment_feature([previous_point, new_point], attributes)
 
                     prev_track_point = track_point
                     prev_track_point_index = self.track_point_count - 1
@@ -171,13 +175,13 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
             self.detect_attribute(child)
 
     def add_attributes(self, attributes, element, key_prefix):
-        """ Reads and adds attributes to the feature """
+        """ Reads attributes from gpx element and adds values to ´attributes´ list """
 
         if len(element) == 0:  # only elements without children
             try:
                 # check if attribute value is available
                 if element.get('key') is not None:
-                    attribute = self.get_attribute_definition(element.get('key'))
+                    attribute: DataTypeDefinition = self.get_attribute_definition(element.get('key'))
                     if attribute is None:
                         return
                     attribute.example_value = element.get('value')
@@ -193,6 +197,8 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
                         attribute.datatype is DataTypes.String:
                     attributes[key_prefix + attribute.attribute_key_modified] = attribute.example_value
                 elif attribute.datatype is DataTypes.Boolean and DataTypes.value_is_boolean(attribute.example_value):
+                    attributes[key_prefix + attribute.attribute_key_modified] = str(attribute.example_value)
+                elif attribute.datatype is DataTypes.Date and DataTypes.value_is_date(attribute.example_value):
                     attributes[key_prefix + attribute.attribute_key_modified] = str(attribute.example_value)
             except KeyError:
                 pass

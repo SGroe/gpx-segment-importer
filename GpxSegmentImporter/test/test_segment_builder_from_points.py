@@ -57,7 +57,8 @@ class TestSegmentBuilder(unittest.TestCase):
         # self.assertEqual(self.segment_builder.attribute_definitions[0].selected,
         #                  datetime.datetime(2023, 11, 17, 21, 30, 4))
 
-        self.assertEqual(segment_layer.featureCount(), 1)
+        self.assertEqual(segment_layer.featureCount(), 2)
+        self.assertEqual(self.segment_builder.equal_coordinates_count, 1)
 
     def test_build_segments_with_motion_attributes(self):
         self.test_build_point_layer()

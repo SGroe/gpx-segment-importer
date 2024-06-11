@@ -194,10 +194,12 @@ class GpxSegmentImporter:
                 if i == len(self.gpx_files):
                     self.iface.messageBar().clearWidgets()
 
-                if self.gpx_file_reader.equal_coordinates > 0:
-                    self.iface.messageBar().pushMessage("Error", 'Cannot create ' +
-                                                        str(self.gpx_file_reader.equal_coordinates) +
-                                                        ' segments because of equal coordinates', level=Qgis.Warning)
+                if self.gpx_file_reader.equal_coordinates_count > 0:
+                    self.iface.messageBar().pushMessage(
+                        'Error',
+                        'Cannot create ' + str(self.gpx_file_reader.equal_coordinates_count) +
+                        ' segments because of equal coordinates',
+                        level=Qgis.Warning)
 
                 if self.gpx_file_reader.error_message != '':
                     self.iface.messageBar().pushMessage("Error", self.gpx_file_reader.error_message,
