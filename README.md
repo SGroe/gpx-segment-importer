@@ -5,7 +5,15 @@ This repository contains the source code for the plugin.
 
 ## Overview
 
-The native GPS eXchange Format (GPX) file importer for the open-source geo-information software QGIS features multiple options to create vector layers. This includes the import of track points as a point dataset and the import of the whole track as a single linestring. If the GPX data contains attributes associated to the track points, only the track point option can be used to read and visualize those attributes. Visualizing them as line segments has not been possible so far. To overcome this missing feature, I have implemented the QGIS plugin “GPX Segment Importer” to visualize attributes as line segments between the track points.
+The native GPS eXchange Format (GPX) file importer for the open-source
+geo-information software QGIS features multiple options to create vector
+layers. This includes the import of track points as a point dataset and
+the import of the whole track as a single linestring. If the GPX data
+contains attributes associated to the track points, only the track point
+option can be used to read and visualize those attributes. Visualizing
+them as line segments has not been possible so far. To overcome this
+missing feature, I have implemented the QGIS plugin “GPX Segment Importer”
+to visualize attributes as line segments between the track points.
 
 ![screenshot](img/screenshot.png)
 
@@ -20,11 +28,27 @@ The native GPS eXchange Format (GPX) file importer for the open-source geo-infor
 
 ## Use of plugin
 
-The plugin is available in the QGIS plugin repository. Just open the plugin repository through the QGIS menu „Plugins” > „Manage and Install Plugins” and search for „GPX Segment Importer“. Select it and press „Install plugin”.
+The plugin is available in the QGIS plugin repository. Just open the plugin
+repository through the QGIS menu „Plugins” > „Manage and Install Plugins”
+and search for „GPX Segment Importer“. Select it and press „Install plugin”.
 
-The dialog is available in the toolbar 'GPX Segment Toolbar' or via the menu 'Plugins' - 'GPX Segment Tools'.
+The dialog is available in the toolbar 'GPX Segment Toolbar' or via the menu
+'Plugins' - 'GPX Segment Tools'.
 
-The algorithms 'Import GPX segments' and 'Create track segments' are available in the toolbox (group 'GPX Segment Importer').
+The algorithms 'Import GPX segments' and 'Create track segments' are available
+in the toolbox (group 'GPX Segment Importer').
+
+## Motion attributes
+
+The following motion attributes are calculated. They reveal some characteristics
+of the movement between the track points.
+
+* A_INDEX: index of start point
+* B_INDEX: index of end point
+* DISTANCE: distance of line segment in meter
+* DURATION: duration between track points in seconds 
+* SPEED: speed between track points in km/h
+* ELEVATION_DIFF: elevation difference between track points in meter
 
 ## Notes
 * By default, the attributes of the latter track point are used for the line segment
