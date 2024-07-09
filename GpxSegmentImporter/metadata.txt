@@ -10,7 +10,7 @@
 name=GPX Segment Importer
 qgisMinimumVersion=3.0
 description=This plugin imports an GPX file and creates short line segments between the track points
-version=3.1
+version=3.2
 author=Simon Gröchenig
 email=simon@sgroe.at
 
@@ -28,7 +28,9 @@ repository=https://github.com/SGroe/gpx-segment-importer
 
 # Recommended items:
 
-changelog=3.1 (2024-06-11)
+changelog=3.2 (2024-07-09)
+    - [Fixed] Attribute-Select string changed to upper case
+    3.1 (2024-06-11)
     - [Fixed] Correct import of QgsProcessingParameterFile.Behavior.File in import-gpx-segments alg
 
 # Tags are comma separated with spaces allowed

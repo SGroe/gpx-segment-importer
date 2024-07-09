@@ -1,7 +1,11 @@
 # Changelog
 
-## v3.1 (2024-06-11)_
-_
+## v3.2 (2024-07-09)
+
+- [Fixed] Attribute-Select string changed to upper case
+
+## v3.1 (2024-06-11)
+
 - [Fixed] Correct import of QgsProcessingParameterFile.Behavior.File in import-gpx-segments alg
 
 ## v3.0 (2023-11-17)
