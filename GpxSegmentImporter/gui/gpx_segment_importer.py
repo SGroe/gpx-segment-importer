@@ -29,6 +29,7 @@ from qgis.PyQt import QtWidgets
 from qgis.core import Qgis, QgsProject, QgsApplication
 # Plugin classes
 from ..core.segment_builder_from_gpx import SegmentBuilderFromGpx
+from ..core.segment_layer_builder import SegmentLayerBuilder
 from .attribute_table_model import AttributeTableModel
 from .datatype_combo_delegate import DatatypeComboDelegate
 # dialog
@@ -173,11 +174,11 @@ class GpxSegmentImporter:
             overwrite = False
             use_wgs84 = True  # if self.dlg.chkUseWgs84.isChecked() else False
             calculate_motion_attributes = True if self.dlg.chkCalculateMotionAttributes.isChecked() else False
-            attribute_select = "Both"
+            attribute_select = SegmentLayerBuilder.ATTRIBUTE_SELECT_BOTH
             if self.dlg.radioButtonFirst.isChecked():
-                attribute_select = "First"
+                attribute_select = SegmentLayerBuilder.ATTRIBUTE_SELECT_FIRST
             elif self.dlg.radioButtonLast.isChecked():
-                attribute_select = "Last"
+                attribute_select = SegmentLayerBuilder.ATTRIBUTE_SELECT_LAST
 
             i = 0
             for gpx_file in self.gpx_files:

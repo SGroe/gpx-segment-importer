@@ -6,6 +6,7 @@ from qgis.PyQt.QtCore import QVariant, QDateTime
 from qgis.core import (QgsVectorLayer, QgsField, QgsFeature, QgsPoint)
 # Plugin imports
 from ..core.segment_builder_from_points import SegmentBuilderFromPoints
+from ..core.segment_layer_builder import SegmentLayerBuilder
 
 
 class TestSegmentBuilder(unittest.TestCase):
@@ -45,7 +46,8 @@ class TestSegmentBuilder(unittest.TestCase):
     def test_build_segments(self):
         self.test_build_point_layer()
         segment_layer = self.segment_builder.build_segments(
-            self.point_layer, "timestamp", '', attribute_select="Last", calculate_motion_attributes=False
+            self.point_layer, "timestamp", '', attribute_select=SegmentLayerBuilder.ATTRIBUTE_SELECT_LAST,
+            calculate_motion_attributes=False
         )
         self.assertEqual(len(self.segment_builder.attribute_definitions), 2)
         self.assertEqual(self.segment_builder.attribute_definitions[0].attribute_key, "timestamp")
@@ -63,7 +65,8 @@ class TestSegmentBuilder(unittest.TestCase):
     def test_build_segments_with_motion_attributes(self):
         self.test_build_point_layer()
         segment_layer = self.segment_builder.build_segments(
-            self.point_layer, "timestamp", '', attribute_select="Last", calculate_motion_attributes=True
+            self.point_layer, "timestamp", '', attribute_select=SegmentLayerBuilder.ATTRIBUTE_SELECT_LAST,
+            calculate_motion_attributes=True
         )
 
         self.assertEqual(len(self.segment_builder.attribute_definitions), 8)

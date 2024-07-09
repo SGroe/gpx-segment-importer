@@ -90,8 +90,8 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
                 new_definition.precision = mapping['precision']
             self.attribute_definitions.append(new_definition)
 
-    def import_gpx_file(self, file_path, output_directory, attribute_select="Last", use_wgs84=True,
-                        calculate_motion_attributes=False, overwrite=False):
+    def import_gpx_file(self, file_path, output_directory, attribute_select=SegmentLayerBuilder.ATTRIBUTE_SELECT_LAST,
+                        use_wgs84=True, calculate_motion_attributes=False, overwrite=False):
         """ Imports the data from the GPX file and create the vector layer """
 
         if len(self.attribute_definitions) == 0:
@@ -149,11 +149,11 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
 
                         # add a feature with first/last/both attributes
                         attributes = dict()
-                        if attribute_select == 'First':
+                        if attribute_select == SegmentLayerBuilder.ATTRIBUTE_SELECT_FIRST:
                             self.add_attributes(attributes, prev_track_point, '')
-                        elif attribute_select == 'Last':
+                        elif attribute_select == SegmentLayerBuilder.ATTRIBUTE_SELECT_LAST:
                             self.add_attributes(attributes, track_point, '')
-                        elif attribute_select == 'Both':
+                        elif attribute_select == SegmentLayerBuilder.ATTRIBUTE_SELECT_BOTH:
                             self.add_attributes(attributes, prev_track_point, 'a_')
                             self.add_attributes(attributes, track_point, 'b_')
 

@@ -46,7 +46,7 @@ class TrackSegmentCreatorAlgorithm(QgsProcessingAlgorithm):
         self.OUTPUT_TRACK_POINT_COUNT = 'OUTPUT_TRACK_POINT_COUNT'
         self.OUTPUT_EQUAL_COORDINATE_COUNT = 'OUTPUT_EQUAL_COORDINATE_COUNT'
 
-        self.attribute_mode_options = ['Both', 'First', 'Last']
+        self.attribute_mode_options = ['BOTH', 'FIRST', 'LAST']
         self.attribute_mode_options_labels = [self.tr('Both'), self.tr('First'), self.tr('Last')]
 
         self.point_layer_reader = SegmentBuilderFromPoints()

@@ -9,9 +9,9 @@ from .vector_file_writer import VectorFileWriter
 class SegmentLayerBuilder:
     """ Builds segment layers and features """
 
-    ATTRIBUTE_SELECT_FIRST = 'first'
-    ATTRIBUTE_SELECT_BOTH = 'both'
-    ATTRIBUTE_SELECT_LAST = 'last'
+    ATTRIBUTE_SELECT_FIRST = 'FIRST'
+    ATTRIBUTE_SELECT_BOTH = 'BOTH'
+    ATTRIBUTE_SELECT_LAST = 'LAST'
 
     def __init__(self):
         self.attribute_definitions: list[DataTypeDefinition] = list()
@@ -37,7 +37,8 @@ class SegmentLayerBuilder:
                 continue
 
             for attribute_select_option in [self.ATTRIBUTE_SELECT_FIRST, self.ATTRIBUTE_SELECT_LAST]:
-                if attribute_select_option != attribute_select and attribute_select != self.ATTRIBUTE_SELECT_BOTH:
+                if attribute_select_option.lower() != attribute_select.lower() \
+                        and attribute_select.lower() != self.ATTRIBUTE_SELECT_BOTH.lower():
                     continue
 
                 prefix = ''  # prefix only if attribute_select = 'Both' AND not for motion attributes
