@@ -12,7 +12,7 @@ class GeomTools:
         return point_a.x() == point_b.x() and point_a.y() == point_b.y()
 
     @staticmethod
-    def calculate_speed(time_a, time_b, point_a, point_b, crs):
+    def calculate_speed(time_a, time_b, point_a, point_b, crs=None):
         distance = GeomTools.distance(point_a, point_b, crs)
 
         # time_diff_h = (time_b - time_a).total_seconds()
@@ -31,7 +31,7 @@ class GeomTools:
         return duration
 
     @staticmethod
-    def distance(start, end, crs):
+    def distance(start, end, crs=None):
         distance = QgsDistanceArea()
         # distance.setEllipsoidalMode(True)
         if crs is not None:
