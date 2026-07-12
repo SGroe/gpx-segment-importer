@@ -1,4 +1,4 @@
-
+import defusedxml
 import os
 from xml.etree import ElementTree
 # QGIS imports
@@ -24,6 +24,7 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
         self.attribute_definitions = list()
         self.error_message = ''
 
+        defusedxml.defuse_stdlib()
         tree = ElementTree.parse(file_path)
         root = tree.getroot()
 
@@ -111,6 +112,7 @@ class SegmentBuilderFromGpx(SegmentLayerBuilder):
         self.track_segment_count = 0
         self.track_point_count = 0
 
+        defusedxml.defuse_stdlib()
         tree = ElementTree.parse(file_path)
         root = tree.getroot()
         self.detect_namespace(root)
