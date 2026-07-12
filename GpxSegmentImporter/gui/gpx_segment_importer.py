@@ -100,9 +100,10 @@ class GpxSegmentImporter:
 
     def select_gpx_files(self):
         # Get GPX files
-        self.gpx_files = QtWidgets.QFileDialog.getOpenFileNames(self.dlg, "Select GPX files ...",
-                                                                self.gpx_directory_default, 'GPX tracks (*.gpx)',
-                                                                options=QtWidgets.QFileDialog.ReadOnly)[0]
+        self.gpx_files = QtWidgets.QFileDialog.getOpenFileNames(
+            self.dlg, "Select GPX files ...",
+            self.gpx_directory_default, 'GPX tracks (*.gpx)',
+            options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
         if len(self.gpx_files) == 1:
             self.dlg.txtSelectedFiles.setText(str(os.path.basename(self.gpx_files[0])))
         else:
@@ -157,7 +158,7 @@ class GpxSegmentImporter:
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
-        result = self.dlg.exec_()
+        result = self.dlg.exec()
         # See if OK was pressed
         if result:
             self.process_gpx_files()
@@ -166,10 +167,10 @@ class GpxSegmentImporter:
         if self.gpx_files is not None and len(self.gpx_files) > 0:
 
             progress_message_bar = self.iface.messageBar().createMessage("Create gpx segments...")
-            progress = QtWidgets.QProgressBar()
+            progress = QtWidgets.QProgressBar(self.dlg)
             progress.setMaximum(len(self.gpx_files))
             progress_message_bar.layout().addWidget(progress)
-            self.iface.messageBar().pushWidget(progress_message_bar, Qgis.Info)
+            self.iface.messageBar().pushWidget(progress_message_bar, Qgis.MessageLevel.Info)
 
             overwrite = False
             use_wgs84 = True  # if self.dlg.chkUseWgs84.isChecked() else False
@@ -182,8 +183,14 @@ class GpxSegmentImporter:
 
             i = 0
             for gpx_file in self.gpx_files:
-                layer = self.gpx_file_reader.import_gpx_file(gpx_file, self.output_directory, attribute_select,
-                                                             use_wgs84, calculate_motion_attributes, overwrite)
+                layer = self.gpx_file_reader.import_gpx_file(
+                    gpx_file,
+                    self.output_directory,
+                    attribute_select,
+                    use_wgs84,
+                    calculate_motion_attributes,
+                    overwrite
+                )
                 if layer is not None:
                     QgsProject.instance().addMapLayer(layer)
 
@@ -199,11 +206,14 @@ class GpxSegmentImporter:
                         'Error',
                         'Cannot create ' + str(self.gpx_file_reader.equal_coordinates_count) +
                         ' segments because of equal coordinates',
-                        level=Qgis.Warning)
+                        level=Qgis.MessageLevel.Warning)
 
                 if self.gpx_file_reader.error_message != '':
-                    self.iface.messageBar().pushMessage("Error", self.gpx_file_reader.error_message,
-                                                        level=Qgis.CRITICAL)
+                    self.iface.messageBar().pushMessage(
+                        "Error",
+                        self.gpx_file_reader.error_message,
+                        level=Qgis.MessageLevel.Critical
+                    )
 
     def initialize(self):
         self.gpx_files = list()

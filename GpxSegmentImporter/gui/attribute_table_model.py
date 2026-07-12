@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QAbstractTableModel
+from qgis.PyQt.QtCore import Qt, QAbstractTableModel
 from ..core.datatype_definition import DataTypes
 
 
@@ -21,40 +21,40 @@ class AttributeTableModel(QAbstractTableModel):
         return 4
 
     def headerData(self, column, orientation, role=None):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+        if orientation == Qt.Orientation.Horizontal and role == Qt.ItemDataRole.DisplayRole:
             return self._header_data[column]
         # return ""
         return QAbstractTableModel.headerData(self, column, orientation, role)
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid():
             return ""
-        elif role == Qt.DisplayRole or role == Qt.EditRole:
+        elif role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
             if index.column() == 1:
                 return self._array_data[index.row()].attribute_key_modified
             elif index.column() == 2:
                 return self._array_data[index.row()].datatype
             elif index.column() == 3:
                 return self._array_data[index.row()].example_value
-        elif role == Qt.CheckStateRole:
+        elif role == Qt.ItemDataRole.CheckStateRole:
             if index.column() == 0:
                 if self._array_data[index.row()].selected:
-                    return Qt.Checked
+                    return Qt.CheckState.Checked
                 else:
-                    return Qt.Unchecked
+                    return Qt.CheckState.Unchecked
         return None
 
-    def setData(self, index, value, role=Qt.EditRole):
+    def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
         if not index.isValid():
             return ""
-        elif role == Qt.EditRole:
+        elif role == Qt.ItemDataRole.EditRole:
             if index.column() == 1:
                 self._array_data[index.row()].attribute_key_modified = value
             elif index.column() == 2:
                 self._array_data[index.row()].datatype = DataTypes.parse(value)
-        elif role == Qt.CheckStateRole:
+        elif role == Qt.ItemDataRole.CheckStateRole:
             if index.column() == 0:
-                if value == Qt.Checked:
+                if value == Qt.CheckState.Checked:
                     self._array_data[index.row()].selected = True
                 else:
                     self._array_data[index.row()].selected = False
@@ -62,11 +62,11 @@ class AttributeTableModel(QAbstractTableModel):
 
     def flags(self, index):
         if not index.isValid():
-            return Qt.NoItemFlags
+            return Qt.ItemFlag.NoItemFlags
         elif index.column() == 0:
-            return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsUserCheckable
+            return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsUserCheckable
         elif index.column() == 1:
-            return Qt.ItemIsEnabled | Qt.ItemIsEditable
+            return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable
         elif index.column() == 2:
-            return Qt.ItemIsEnabled | Qt.ItemIsEditable
-        return QAbstractTableModel.flags(self, index) | Qt.NoItemFlags
+            return Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsEditable
+        return QAbstractTableModel.flags(self, index) | Qt.ItemFlag.NoItemFlags

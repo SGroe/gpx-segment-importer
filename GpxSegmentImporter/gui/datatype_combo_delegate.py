@@ -23,7 +23,7 @@ class DatatypeComboDelegate(QItemDelegate):
 
     def setEditorData(self, editor, index):
         editor.blockSignals(True)
-        value = index.model().data(index, Qt.DisplayRole)
+        value = index.model().data(index, Qt.ItemDataRole.DisplayRole)
         if value:
             editor.setCurrentIndex(self.get_row_index(value))
         editor.blockSignals(False)
@@ -38,7 +38,7 @@ class DatatypeComboDelegate(QItemDelegate):
         return 0
 
     def setModelData(self, editor, model, index):
-        model.setData(index, editor.currentText(), Qt.EditRole)
+        model.setData(index, editor.currentText(), Qt.ItemDataRole.EditRole)
 
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
@@ -47,8 +47,12 @@ class DatatypeComboDelegate(QItemDelegate):
         # print str(index.row()) + " / " + str(len(self.items))
         # text = self.items[index.row()]
         text = self._items[1]
-        option.text = text
-        QApplication.style().drawControl(QStyle.CE_ItemViewItem, option, painter)
+        option.text = ""  # text
+        QApplication.style().drawControl(
+            QStyle.ControlElement.CE_ItemViewItem,
+            option,
+            painter
+        )
 
     @pyqtSlot()
     def currentIndexChanged(self):
