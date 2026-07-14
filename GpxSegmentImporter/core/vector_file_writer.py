@@ -1,5 +1,5 @@
 # qgis
-from qgis.core import QgsVectorFileWriter, QgsVectorLayer, QgsVectorLayer
+from qgis.core import QgsVectorFileWriter
 import os.path
 
 
@@ -19,7 +19,7 @@ class VectorFileWriter:
             if os.path.exists(output_file_path) is False or overwrite is True:
                 error = QgsVectorFileWriter.writeAsVectorFormat(vector_layer, output_file_path, 'utf-8',
                                                                 vector_layer.crs(), 'gpkg')[0]
-                if error == QgsVectorFileWriter.NoError:
+                if error == QgsVectorFileWriter.WriterError.NoError:
                     return output_file_path
                 else:
                     print(error)

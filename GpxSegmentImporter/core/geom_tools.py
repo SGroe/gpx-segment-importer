@@ -33,7 +33,6 @@ class GeomTools:
     @staticmethod
     def distance(start, end, crs=None):
         distance = QgsDistanceArea()
-        # distance.setEllipsoidalMode(True)
         if crs is not None:
             distance.setSourceCrs(crs, QgsProject.instance().transformContext())
             if distance.sourceCrs().isGeographic():

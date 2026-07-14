@@ -1,4 +1,4 @@
-from datetime import *
+from datetime import datetime
 import re
 from qgis.PyQt.QtCore import QDateTime, QVariant
 from qgis.core import QgsField
